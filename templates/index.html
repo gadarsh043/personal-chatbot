@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adarsh's Resume Chatbot</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #chatbox { width: 500px; margin: 20px auto; border: 1px solid #ccc; padding: 10px; }
+        #messages { height: 300px; overflow-y: scroll; border: 1px solid #ddd; padding: 10px; }
+        #input { width: 80%; padding: 10px; }
+        button { padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Talk to Adarsh's Chatbot</h1>
+    <div id="chatbox">
+        <div id="messages"></div>
+        <input id="input" type="text" placeholder="Ask me anything!">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById("input");
+            const messages = document.getElementById("messages");
+            const question = input.value;
+            if (question.trim() === "") return;
+
+            // Display user's question
+            messages.innerHTML += `<p><strong>You:</strong> ${question}</p>`;
+            input.value = "";
+
+            // Send question to Flask backend
+            const response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+
+            // Display chatbot response
+            messages.innerHTML += `<p><strong>AdarshBot:</strong> ${data.response}</p>`;
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Allow pressing Enter to send
+        document.getElementById("input").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
