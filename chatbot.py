@@ -126,7 +126,7 @@ class EnhancedPersonalChatbot:
             return None
     
     def generate_ai_response(self, question):
-        """Generate response using DeepSeek AI"""
+        """Generate response using DeepSeek AI with Firebase context"""
         if not self.deepseek_api_key:
             return self.generate_fallback_response(question)
         
@@ -134,18 +134,25 @@ class EnhancedPersonalChatbot:
             # Create context about Adarsh for the AI
             context = self.build_ai_context()
             
+            # Add Firebase learned Q&A context
+            firebase_context = self.build_firebase_context()
+            
             prompt = f"""You are Adarsh's AI assistant. Based on the context below, answer the question as if you are representing Adarsh professionally.
 
 CONTEXT ABOUT ADARSH:
 {context}
+
+PREVIOUS CONVERSATIONS (for reference only):
+{firebase_context}
 
 QUESTION: {question}
 
 INSTRUCTIONS:
 - Answer in first person as Adarsh
 - Be professional but conversational
+- If the question is similar to previous conversations, you can reference that knowledge
 - If the question is not directly related to Adarsh's background, politely redirect to his professional expertise
-- Keep responses concise but informative
+- Keep responses concise but informative (max 150 words)
 - Show enthusiasm for technology and development
 - If you don't have specific information, be honest but offer related information you do have
 
@@ -232,6 +239,24 @@ ANSWER:"""
         ])
         
         return '\n'.join(context_parts)
+    
+    def build_firebase_context(self):
+        """Build context from Firebase learned Q&A for AI reference"""
+        if not self.learned_qa:
+            return "No previous conversations available."
+        
+        context_parts = []
+        # Limit to most recent or relevant Q&A pairs
+        for qa_id, qa_data in list(self.learned_qa.items())[:25]:  # Last 25 Q&A pairs
+            question = qa_data.get('question', '')
+            answer = qa_data.get('answer', '')
+            if question and answer:
+                context_parts.append(f"Q: {question}\nA: {answer}")
+        
+        if context_parts:
+            return "\n\n".join(context_parts)
+        else:
+            return "No previous conversations available."
     
     def generate_fallback_response(self, question):
         """Generate a fallback response when AI is not available"""
@@ -400,7 +425,7 @@ ANSWER:"""
         return SequenceMatcher(None, a.lower(), b.lower()).ratio()
     
     def search_learned_qa(self, question):
-        """Search for similar questions in learned Q&A"""
+        """Search for similar questions in learned Q&A with strict matching"""
         question_lower = question.lower().strip()
         best_match = None
         best_score = 0
@@ -414,23 +439,30 @@ ANSWER:"""
             # Calculate base similarity
             similarity_score = self.similarity(question_lower, stored_question)
             
-            # Boost score for keyword matches
-            question_words = set(word for word in question_lower.split() if len(word) > 2)
-            stored_words = set(word for word in stored_question.split() if len(word) > 2)
+            # Only proceed if there's reasonable base similarity
+            if similarity_score < 0.3:
+                continue
+            
+            # Check for exact phrase matches (high confidence)
+            if question_lower == stored_question:
+                similarity_score = 1.0
+            elif question_lower in stored_question or stored_question in question_lower:
+                similarity_score += 0.3
+            
+            # Keyword matching with stricter criteria
+            question_words = set(word for word in question_lower.split() if len(word) > 3)
+            stored_words = set(word for word in stored_question.split() if len(word) > 3)
             common_words = question_words.intersection(stored_words)
             
-            if common_words:
+            # Only boost if significant word overlap
+            if common_words and len(common_words) >= 2:
                 keyword_boost = len(common_words) / max(len(question_words), len(stored_words))
-                similarity_score += keyword_boost * 0.3
-            
-            # Check for exact phrase matches
-            if question_lower in stored_question or stored_question in question_lower:
-                similarity_score += 0.4
+                similarity_score += keyword_boost * 0.2
             
             print(f"  📝 '{stored_question[:50]}...' -> Score: {similarity_score:.3f}")
             
-            # Lower threshold for better matching
-            if similarity_score > best_score and similarity_score > 0.4:
+            # Much higher threshold for strict matching
+            if similarity_score > best_score and similarity_score > 0.7:
                 best_score = similarity_score
                 best_match = qa_data
                 print(f"  ✅ New best match! Score: {best_score:.3f}")
@@ -456,13 +488,13 @@ ANSWER:"""
         if any(word in question_lower for word in ['tell me about yourself', 'who are you', 'introduce yourself']):
             return f"I'm {self.resume.get('personal', {}).get('name', 'Adarsh')}, a passionate full-stack developer who loves building scalable web applications. I recently worked at Quinbay where I built UI solutions used by thousands of sellers. I'm always excited about new technologies and love solving complex problems. What would you like to know more about?"
         
-        # 1. First check learned Q&A from Firebase
+        # 1. First check learned Q&A from Firebase (strict matching)
         learned_match, learned_score = self.search_learned_qa(question)
-        if learned_match and learned_score > 0.4:
+        if learned_match and learned_score > 0.7:  # Higher threshold for strict matching
             print(f"📚 Found learned answer for: {question[:50]}...")
             response = learned_match['answer']
             if learned_match['ai_generated'] and not learned_match['reviewed']:
-                response += "\n\n💡 *This answer was AI-generated and may be updated as I learn more!*"
+                response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated and may be updated as I learn more!</p>"
             return response
         
         # 2. Check predefined responses from resume.yaml
@@ -487,6 +519,7 @@ ANSWER:"""
         
         # 3. If good match found in predefined responses, return it
         if best_match and best_score > 0.4:
+            print(f"📋 Using resume-based response for: {question[:50]}...")
             return best_match
         
         # 4. If no good match, use AI to generate response and save it
@@ -497,7 +530,7 @@ ANSWER:"""
         self.save_learned_qa(question, ai_response, ai_generated=True)
         
         # Add indicator that this is AI-generated
-        ai_response += "\n\n💡 *This answer was AI-generated. I'm always learning and improving my responses!*"
+        ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. I'm always learning and improving my responses!</p>"
         
         return ai_response
 

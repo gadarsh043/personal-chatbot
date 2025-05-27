@@ -479,7 +479,7 @@
             
             const content = document.createElement("div");
             content.className = "message-content";
-            content.textContent = text;
+            content.innerHTML = text;
             
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(content);
