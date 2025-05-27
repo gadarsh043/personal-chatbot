@@ -5,19 +5,12 @@ import random
 import requests
 import os
 from datetime import datetime
+import firebase_admin
+from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-
-# Optional Firebase imports
-try:
-    import firebase_admin
-    from firebase_admin import credentials, firestore
-    FIREBASE_AVAILABLE = True
-except ImportError:
-    FIREBASE_AVAILABLE = False
-    print("⚠️ Firebase not available - running in basic mode")
 
 class PersonalChatbot:
     def __init__(self, name="AdarshBot"):
@@ -31,10 +24,6 @@ class PersonalChatbot:
     
     def init_firebase(self):
         """Initialize Firebase connection"""
-        if not FIREBASE_AVAILABLE:
-            print("📱 Running without Firebase - responses will be generated fresh each time")
-            return None
-            
         try:
             if not firebase_admin._apps:
                 firebase_key_path = os.getenv('FIREBASE_KEY_PATH', 'firebase-key.json')
@@ -191,29 +180,18 @@ class PersonalChatbot:
         
         for qa_id, qa_data in self.learned_qa.items():
             stored_question = qa_data['question'].lower()
-            
-            # Multiple matching strategies
             similarity = SequenceMatcher(None, question_lower, stored_question).ratio()
             
             # Boost score for exact matches
             if question_lower == stored_question:
                 similarity = 1.0
             elif question_lower in stored_question or stored_question in question_lower:
-                similarity += 0.2  # Reduced boost
+                similarity += 0.3
             
-            # Keyword matching boost - more conservative
-            question_words = set(question_lower.split())
-            stored_words = set(stored_question.split())
-            common_words = question_words.intersection(stored_words)
-            if len(common_words) >= 3:  # Require more common words
-                similarity += 0.1
-            
-            # Higher threshold to prevent false matches
             if similarity > best_score and similarity > 0.7:
                 best_score = similarity
                 best_match = qa_data
-                
-        print(f"🔍 Search for '{question[:30]}...' - Best match score: {best_score:.3f}")
+        
         return best_match, best_score
 
     def generate_ai_response(self, question):
@@ -222,46 +200,52 @@ class PersonalChatbot:
             return f"I don't have specific information about '{question}', but I'd love to tell you about my technical skills, projects, or experience. What interests you most?"
         
         try:
-            # Analyze question type for better context
-            question_lower = question.lower()
+            # Get recent context from learned Q&A pairs
+            context_pairs = []
+            if self.learned_qa:
+                # Sort by created_at and get last 25
+                sorted_qa = sorted(
+                    self.learned_qa.values(), 
+                    key=lambda x: x.get('created_at', datetime.min), 
+                    reverse=True
+                )[:25]
+                
+                for qa in sorted_qa:
+                    context_pairs.append(f"Q: {qa['question']}\nA: {qa['answer']}")
             
-            if any(word in question_lower for word in ['india', 'indian', 'country', 'culture']):
-                context = "Questions about India, culture, or geography"
-            elif any(word in question_lower for word in ['coding', 'programming', 'code', 'development', 'tech']):
-                context = "Technical/coding questions - focus on Adarsh's expertise"
-            elif any(word in question_lower for word in ['cooking', 'food', 'recipe', 'eat']):
-                context = "Personal interests outside of work"
-            else:
-                context = "General questions about Adarsh's background"
-
-            prompt = f"""You are Adarsh's AI assistant. Answer as Adarsh in first person, being helpful and personable.
+            context_text = "\n\n".join(context_pairs) if context_pairs else "No previous conversations yet."
+            
+            prompt = f"""You are Adarsh's personal AI assistant. Answer as Adarsh in first person. You should be knowledgeable, engaging, and always connect back to Adarsh's career and expertise.
 
 ABOUT ADARSH:
 - Full-stack developer passionate about technology
 - Experience at Quinbay building solutions for 10,000+ users  
 - Skills: JavaScript, Python, React, Vue.js, Node.js, AWS, Docker
 - Projects: PhotoShare, Mushroom Classification, E-commerce platforms
-- Based in the United States, Indian background
-- Enjoys problem-solving and building meaningful applications
+- Based in the United States, open to opportunities
+- Enjoys building innovative solutions and solving complex problems
 
-QUESTION TYPE: {context}
-QUESTION: {question}
+INSTRUCTIONS:
+1. Answer ANY question asked with genuine knowledge and enthusiasm
+2. Provide interesting facts, insights, or personal touches when possible
+3. ALWAYS smoothly transition to how this relates to Adarsh's skills or career
+4. Be conversational, smart, and personable
+5. If the question is about technology/programming, emphasize Adarsh's expertise
+6. Check the previous conversations below to avoid repeating answers
 
-Response Strategy:
-1. ACKNOWLEDGE the question with genuine interest
-2. PROVIDE a helpful/interesting response (fun facts, personal insights, or smart guesses)
-3. CONNECT naturally to your professional background
-4. REDIRECT smoothly to career-related topics
+PREVIOUS CONVERSATIONS (last 25):
+{context_text}
 
-Examples:
-- India question → Share interesting fact about India + "As someone with Indian roots now working in US tech..."
-- Food question → Make educated guess based on background + "Speaking of favorites, I love creating..."
-- Technical question → Dive deep into relevant experience and projects
-- Cooking question → Share brief interest + "I apply the same creativity to coding..."
+CURRENT QUESTION: {question}
 
-Tone: Conversational, authentic, helpful, naturally flowing
-Length: 120-150 words
-Goal: Be genuinely helpful while showcasing professional expertise"""
+EXAMPLE RESPONSES:
+Q: "Do you know India?"
+A: "Absolutely! India is an incredible country with a rich cultural heritage and a booming tech industry. Did you know India produces more IT graduates than any other country? Speaking of tech talent, that's exactly the kind of innovative environment that shaped Adarsh's problem-solving approach. His experience building scalable solutions at Quinbay really benefits from that global tech perspective. Are you interested in learning about his international development experience?"
+
+Q: "Do you know cooking?"  
+A: "I love the art of cooking! It's all about following recipes, experimenting with ingredients, and creating something amazing - just like coding! Fun fact: the best chefs are often great at debugging recipes when something goes wrong. That's actually similar to how Adarsh approaches software development - methodical, creative, and always iterating to perfection. His React and Node.js projects require the same attention to detail as a perfect dish. What kind of technical 'recipes' would you like to know about?"
+
+Now answer the current question following this style - be knowledgeable, engaging, and smoothly redirect to Adarsh's career (max 60 words, don't mention word count):"""
 
             response = requests.post(
                 "https://api.deepseek.com/v1/chat/completions",
@@ -272,14 +256,16 @@ Goal: Be genuinely helpful while showcasing professional expertise"""
                 json={
                     'model': 'deepseek-chat',
                     'messages': [{'role': 'user', 'content': prompt}],
-                    'max_tokens': 300,
-                    'temperature': 0.7
+                    'max_tokens': 400,
+                    'temperature': 0.8
                 },
-                timeout=20
+                timeout=15
             )
             
             if response.status_code == 200:
-                return response.json()['choices'][0]['message']['content'].strip()
+                ai_answer = response.json()['choices'][0]['message']['content'].strip()
+                print(f"🤖 Generated AI response for: {question[:50]}...")
+                return ai_answer
             else:
                 print(f"⚠️ DeepSeek API error: {response.status_code}")
                 return self.generate_fallback_response(question)
@@ -290,7 +276,23 @@ Goal: Be genuinely helpful while showcasing professional expertise"""
 
     def generate_fallback_response(self, question):
         """Fallback response when AI is unavailable"""
-        return f"Thanks for asking about '{question}'! While I don't have specific details on that, I'm excited to share about my experience in full-stack development, my projects, or my technical skills. What would you like to know?"
+        # Create contextual fallback responses
+        question_lower = question.lower()
+        
+        if any(word in question_lower for word in ['india', 'country', 'culture']):
+            return "That's an interesting question about cultures and places! While I'd love to dive deeper into that topic, I'm here to tell you about Adarsh's amazing journey in tech. He's worked on projects that serve users globally, including building scalable solutions at Quinbay. What would you like to know about his international development experience?"
+        
+        elif any(word in question_lower for word in ['cooking', 'food', 'recipe']):
+            return "Cooking is such an art! Just like coding, it requires creativity, precision, and patience. Speaking of precision, that's exactly what Adarsh brings to his software development work. His React and Node.js projects are crafted with the same attention to detail as a perfect recipe. Would you like to hear about his technical 'ingredients' and development process?"
+        
+        elif any(word in question_lower for word in ['music', 'art', 'creative']):
+            return "Creativity is fascinating! There's actually a lot of creativity in software development too. Adarsh combines technical skills with creative problem-solving to build innovative solutions like PhotoShare and his machine learning projects. Want to explore how he blends creativity with cutting-edge technology?"
+        
+        elif any(word in question_lower for word in ['sports', 'game', 'play']):
+            return "Games and sports teach great lessons about strategy and teamwork! Those same principles apply to software development. Adarsh's experience building collaborative solutions at Quinbay really showcases his team-player approach to coding. Interested in learning about his collaborative development projects?"
+        
+        else:
+            return f"That's a great question about '{question}'! While I'd love to explore that topic further, I'm here to share Adarsh's incredible journey in technology. He's passionate about building solutions that make a real impact - from e-commerce platforms to AI projects. What aspect of his technical expertise interests you most?"
 
     # ==================== MAIN RESPONSE LOGIC ====================
     

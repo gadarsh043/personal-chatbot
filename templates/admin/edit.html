@@ -305,6 +305,16 @@
                               required>{{ qa.answer }}</textarea>
                 </div>
                 
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" name="reviewed" {% if qa.reviewed %}checked{% endif %} style="margin-right: 0.5rem;">
+                        Mark as reviewed and approved
+                    </label>
+                    <div style="font-size: 0.9rem; color: #6b7280; margin-top: 0.5rem;">
+                        Check this box if you've verified the answer is accurate and appropriate
+                    </div>
+                </div>
+                
                 <div class="form-actions">
                     <a href="/admin" class="btn btn-secondary">
                         ❌ Cancel
