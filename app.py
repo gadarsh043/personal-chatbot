@@ -84,7 +84,7 @@ def embed_script():
 def handle_firebase_error():
     """Handle Firebase connection errors"""
     if not chatbot.firebase_db:
-        return render_template("admin/error.html", error="Firebase not connected")
+        return render_template("admin/error.html", error="Firebase not available in this deployment. Admin features require Firebase configuration.")
     return None
 
 @app.route("/admin")
