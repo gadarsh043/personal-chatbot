@@ -347,7 +347,7 @@
                     <span class="progress-value">{{ stats.ai_generated }} ({{ "%.1f"|format((stats.ai_generated / stats.total_qa * 100) if stats.total_qa > 0 else 0) }}%)</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ (stats.ai_generated / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}%"></div>
+                    <div class="progress-fill" data-width="{{ (stats.ai_generated / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}"></div>
                 </div>
                 
                 <div class="progress-label">
@@ -355,7 +355,7 @@
                     <span class="progress-value">{{ stats.manual }} ({{ "%.1f"|format((stats.manual / stats.total_qa * 100) if stats.total_qa > 0 else 0) }}%)</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ (stats.manual / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}%"></div>
+                    <div class="progress-fill" data-width="{{ (stats.manual / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}"></div>
                 </div>
             </div>
             
@@ -367,7 +367,7 @@
                     <span class="progress-value">{{ stats.reviewed }} ({{ "%.1f"|format((stats.reviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0) }}%)</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ (stats.reviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}%"></div>
+                    <div class="progress-fill" data-width="{{ (stats.reviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}"></div>
                 </div>
                 
                 <div class="progress-label">
@@ -375,7 +375,7 @@
                     <span class="progress-value">{{ stats.unreviewed }} ({{ "%.1f"|format((stats.unreviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0) }}%)</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: {{ (stats.unreviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}%; background: var(--highlight-color);"></div>
+                    <div class="progress-fill" data-width="{{ (stats.unreviewed / stats.total_qa * 100) if stats.total_qa > 0 else 0 }}" data-color="var(--highlight-color)"></div>
                 </div>
             </div>
         </div>
@@ -436,5 +436,22 @@
             {% endif %}
         </div>
     </div>
+    
+    <script>
+        // Apply progress bar styles from data attributes
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.progress-fill').forEach(function(element) {
+                const width = element.getAttribute('data-width');
+                const color = element.getAttribute('data-color');
+                
+                if (width) {
+                    element.style.width = width + '%';
+                }
+                if (color) {
+                    element.style.background = color;
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
