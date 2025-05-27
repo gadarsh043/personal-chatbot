@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Error - Adarsh AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #008080;
+            --dark-neutral: #2c3e50;
+            --light-neutral: #f7f9f9;
+            --error-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-neutral);
+            color: var(--dark-neutral);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .error-container {
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+        
+        .error-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .error-details {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .error-details code {
+            background: #fee2e2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .setup-guide {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .setup-guide h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .setup-guide ol {
+            margin-left: 1.5rem;
+        }
+        
+        .setup-guide li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h1 class="error-title">Admin Error</h1>
+        <p class="error-message">{{ error }}</p>
+        
+        {% if 'Firebase' in error %}
+        <div class="setup-guide">
+            <h3>🔥 Firebase Setup Required</h3>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                <li>Create a new project called "personal-chatbot"</li>
+                <li>Enable Firestore Database</li>
+                <li>Generate service account key (Project Settings → Service Accounts)</li>
+                <li>Download JSON file as <code>firebase-key.json</code></li>
+                <li>Add to .env: <code>FIREBASE_KEY_PATH=firebase-key.json</code></li>
+            </ol>
+        </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="/" class="btn btn-primary">
+                🏠 Back to Chat
+            </a>
+            <a href="/admin" class="btn btn-secondary">
+                🔄 Retry Admin
+            </a>
+        </div>
+    </div>
+</body>
+</html> 

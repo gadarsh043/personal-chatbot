@@ -2,17 +2,246 @@ import yaml
 import re
 from difflib import SequenceMatcher
 import random
+import requests
+import json
+import os
+from datetime import datetime
+import firebase_admin
+from firebase_admin import credentials, firestore
+from dotenv import load_dotenv
 
-class PersonalChatbot:
+# Load environment variables
+load_dotenv()
+
+class EnhancedPersonalChatbot:
     def __init__(self, name="AdarshBot"):
         self.name = name
         self.resume = None
         self.responses = {}
         self.personality_responses = {}
         self.conversation_starters = []
+        self.firebase_db = None
+        self.deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
+        self.deepseek_api_url = "https://api.deepseek.com/v1/chat/completions"
+        
+        # Initialize Firebase
+        self.init_firebase()
+        
+        # Load data
         self.load_resume_data()
         self.setup_personality()
         self.setup_responses()
+        
+        # Load learned Q&A from Firebase
+        self.learned_qa = self.load_learned_qa()
+    
+    def init_firebase(self):
+        """Initialize Firebase connection"""
+        try:
+            # Check if Firebase is already initialized
+            if not firebase_admin._apps:
+                # For local development, use service account key
+                firebase_key_path = os.getenv('FIREBASE_KEY_PATH', 'firebase-key.json')
+                if os.path.exists(firebase_key_path):
+                    cred = credentials.Certificate(firebase_key_path)
+                    firebase_admin.initialize_app(cred)
+                else:
+                    # For production, use environment variables
+                    firebase_config = {
+                        "type": "service_account",
+                        "project_id": os.getenv('FIREBASE_PROJECT_ID'),
+                        "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
+                        "private_key": os.getenv('FIREBASE_PRIVATE_KEY', '').replace('\\n', '\n'),
+                        "client_email": os.getenv('FIREBASE_CLIENT_EMAIL'),
+                        "client_id": os.getenv('FIREBASE_CLIENT_ID'),
+                        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                        "client_x509_cert_url": os.getenv('FIREBASE_CLIENT_CERT_URL')
+                    }
+                    cred = credentials.Certificate(firebase_config)
+                    firebase_admin.initialize_app(cred)
+            
+            self.firebase_db = firestore.client()
+            print("✅ Firebase initialized successfully")
+        except Exception as e:
+            print(f"⚠️ Firebase initialization failed: {e}")
+            print("📝 Continuing without Firebase - learned Q&A will not persist")
+            self.firebase_db = None
+    
+    def load_learned_qa(self):
+        """Load previously learned Q&A pairs from Firebase"""
+        learned_qa = {}
+        if not self.firebase_db:
+            return learned_qa
+        
+        try:
+            docs = self.firebase_db.collection('learned_qa').stream()
+            for doc in docs:
+                data = doc.to_dict()
+                learned_qa[doc.id] = {
+                    'question': data.get('question', ''),
+                    'answer': data.get('answer', ''),
+                    'ai_generated': data.get('ai_generated', False),
+                    'reviewed': data.get('reviewed', False),
+                    'created_at': data.get('created_at'),
+                    'updated_at': data.get('updated_at')
+                }
+            print(f"📚 Loaded {len(learned_qa)} learned Q&A pairs from Firebase")
+        except Exception as e:
+            print(f"⚠️ Error loading learned Q&A: {e}")
+        
+        return learned_qa
+    
+    def save_learned_qa(self, question, answer, ai_generated=True):
+        """Save new Q&A pair to Firebase"""
+        if not self.firebase_db:
+            print("⚠️ Firebase not available - cannot save learned Q&A")
+            return None
+        
+        try:
+            # Create a unique ID based on question
+            question_id = re.sub(r'[^a-zA-Z0-9]', '_', question.lower())[:50]
+            
+            qa_data = {
+                'question': question,
+                'answer': answer,
+                'ai_generated': ai_generated,
+                'reviewed': False,
+                'created_at': datetime.now(),
+                'updated_at': datetime.now()
+            }
+            
+            # Save to Firebase
+            doc_ref = self.firebase_db.collection('learned_qa').document(question_id)
+            doc_ref.set(qa_data)
+            
+            # Update local cache
+            self.learned_qa[question_id] = qa_data
+            
+            print(f"💾 Saved new Q&A to Firebase: {question[:50]}...")
+            return question_id
+        except Exception as e:
+            print(f"⚠️ Error saving learned Q&A: {e}")
+            return None
+    
+    def generate_ai_response(self, question):
+        """Generate response using DeepSeek AI"""
+        if not self.deepseek_api_key:
+            return self.generate_fallback_response(question)
+        
+        try:
+            # Create context about Adarsh for the AI
+            context = self.build_ai_context()
+            
+            prompt = f"""You are Adarsh's AI assistant. Based on the context below, answer the question as if you are representing Adarsh professionally.
+
+CONTEXT ABOUT ADARSH:
+{context}
+
+QUESTION: {question}
+
+INSTRUCTIONS:
+- Answer in first person as Adarsh
+- Be professional but conversational
+- If the question is not directly related to Adarsh's background, politely redirect to his professional expertise
+- Keep responses concise but informative
+- Show enthusiasm for technology and development
+- If you don't have specific information, be honest but offer related information you do have
+
+ANSWER:"""
+
+            headers = {
+                'Authorization': f'Bearer {self.deepseek_api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            data = {
+                'model': 'deepseek-chat',
+                'messages': [
+                    {
+                        'role': 'user',
+                        'content': prompt
+                    }
+                ],
+                'max_tokens': 300,
+                'temperature': 0.7
+            }
+            
+            response = requests.post(self.deepseek_api_url, headers=headers, json=data, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                ai_answer = result['choices'][0]['message']['content'].strip()
+                print(f"🤖 Generated AI response for: {question[:50]}...")
+                return ai_answer
+            else:
+                print(f"⚠️ DeepSeek API error: {response.status_code}")
+                return self.generate_fallback_response(question)
+                
+        except Exception as e:
+            print(f"⚠️ Error generating AI response: {e}")
+            return self.generate_fallback_response(question)
+    
+    def build_ai_context(self):
+        """Build context about Adarsh for AI responses"""
+        context_parts = []
+        
+        if self.resume:
+            # Personal info
+            personal = self.resume.get('personal', {})
+            if personal:
+                context_parts.append(f"Name: {personal.get('name', 'Adarsh')}")
+                context_parts.append(f"Location: {personal.get('location', '')}")
+                context_parts.append(f"Email: {personal.get('email', '')}")
+                context_parts.append(f"Phone: {personal.get('phone', '')}")
+                context_parts.append(f"Favorite color: {personal.get('favorite_color', 'red')}")
+            
+            # Skills
+            skills = self.resume.get('skills', {})
+            if skills:
+                context_parts.append(f"Programming Languages: {', '.join(skills.get('languages', []))}")
+                context_parts.append(f"Frameworks: {', '.join(skills.get('frameworks', []))}")
+                context_parts.append(f"Tools: {', '.join(skills.get('tools', []))}")
+            
+            # Experience
+            experience = self.resume.get('experience', [])
+            if experience:
+                exp = experience[0]
+                context_parts.append(f"Current/Recent Role: {exp.get('role', '')} at {exp.get('company', '')} ({exp.get('duration', '')})")
+                context_parts.append(f"Responsibilities: {'. '.join(exp.get('responsibilities', []))}")
+            
+            # Education
+            education = self.resume.get('education', [])
+            if education:
+                edu = education[0]
+                context_parts.append(f"Education: {edu.get('degree', '')} from {edu.get('university', '')} ({edu.get('year', '')})")
+            
+            # Projects
+            projects = self.resume.get('projects', [])
+            if projects:
+                project_names = [p.get('name', '') for p in projects[:3]]  # Top 3 projects
+                context_parts.append(f"Key Projects: {', '.join(project_names)}")
+        
+        # Add personality traits
+        context_parts.extend([
+            "Personality: Passionate about full-stack development, loves solving complex problems",
+            "Interests: Cloud technologies, AI/ML integration, scalable architectures",
+            "Work Style: Collaborative, agile methodologies, continuous learning",
+            "Career Goals: Building products that scale globally and impact millions of users"
+        ])
+        
+        return '\n'.join(context_parts)
+    
+    def generate_fallback_response(self, question):
+        """Generate a fallback response when AI is not available"""
+        fallback_responses = [
+            f"That's an interesting question about '{question}'! While I don't have specific information on that topic, I'd love to tell you about my experience in full-stack development, my projects at Quinbay, or my technical skills. What aspect of my background would you like to explore?",
+            f"Great question! Though I might not have details on '{question}' specifically, I'm passionate about technology and always learning. Feel free to ask me about my programming skills, recent projects, or what drives me as a developer.",
+            f"I appreciate your question about '{question}'! While that's not something I have specific information on, I'm excited to share about my journey in tech, my experience building scalable applications, or my work with modern frameworks. What interests you most?",
+            f"Interesting question! While I might not have specific details about '{question}', I can tell you about my technical expertise, my experience at Quinbay where I built solutions for 10,000+ users, or my passion for cloud technologies. What would you like to know?"
+        ]
+        return random.choice(fallback_responses)
     
     def load_resume_data(self):
         """Load resume data from YAML file"""
@@ -170,8 +399,51 @@ class PersonalChatbot:
         """Calculate similarity between two strings"""
         return SequenceMatcher(None, a.lower(), b.lower()).ratio()
     
+    def search_learned_qa(self, question):
+        """Search for similar questions in learned Q&A"""
+        question_lower = question.lower().strip()
+        best_match = None
+        best_score = 0
+        
+        print(f"🔍 Searching learned Q&A for: '{question}'")
+        print(f"📚 Available Q&A pairs: {len(self.learned_qa)}")
+        
+        for qa_id, qa_data in self.learned_qa.items():
+            stored_question = qa_data['question'].lower()
+            
+            # Calculate base similarity
+            similarity_score = self.similarity(question_lower, stored_question)
+            
+            # Boost score for keyword matches
+            question_words = set(word for word in question_lower.split() if len(word) > 2)
+            stored_words = set(word for word in stored_question.split() if len(word) > 2)
+            common_words = question_words.intersection(stored_words)
+            
+            if common_words:
+                keyword_boost = len(common_words) / max(len(question_words), len(stored_words))
+                similarity_score += keyword_boost * 0.3
+            
+            # Check for exact phrase matches
+            if question_lower in stored_question or stored_question in question_lower:
+                similarity_score += 0.4
+            
+            print(f"  📝 '{stored_question[:50]}...' -> Score: {similarity_score:.3f}")
+            
+            # Lower threshold for better matching
+            if similarity_score > best_score and similarity_score > 0.4:
+                best_score = similarity_score
+                best_match = qa_data
+                print(f"  ✅ New best match! Score: {best_score:.3f}")
+        
+        if best_match:
+            print(f"🎯 Found match with score {best_score:.3f}")
+        else:
+            print("❌ No suitable match found")
+        
+        return best_match, best_score
+    
     def get_response(self, question):
-        """Get response for a given question with personality"""
+        """Enhanced get response with AI learning capability"""
         if not question:
             return "I'm here and ready to chat! What would you like to know about me?"
         
@@ -184,7 +456,16 @@ class PersonalChatbot:
         if any(word in question_lower for word in ['tell me about yourself', 'who are you', 'introduce yourself']):
             return f"I'm {self.resume.get('personal', {}).get('name', 'Adarsh')}, a passionate full-stack developer who loves building scalable web applications. I recently worked at Quinbay where I built UI solutions used by thousands of sellers. I'm always excited about new technologies and love solving complex problems. What would you like to know more about?"
         
-        # Direct keyword matching
+        # 1. First check learned Q&A from Firebase
+        learned_match, learned_score = self.search_learned_qa(question)
+        if learned_match and learned_score > 0.4:
+            print(f"📚 Found learned answer for: {question[:50]}...")
+            response = learned_match['answer']
+            if learned_match['ai_generated'] and not learned_match['reviewed']:
+                response += "\n\n💡 *This answer was AI-generated and may be updated as I learn more!*"
+            return response
+        
+        # 2. Check predefined responses from resume.yaml
         best_match = None
         best_score = 0
         
@@ -204,20 +485,24 @@ class PersonalChatbot:
                     best_score = score
                     best_match = response
         
-        # Return best match or engaging fallback
-        if best_match and best_score > 0.2:
+        # 3. If good match found in predefined responses, return it
+        if best_match and best_score > 0.4:
             return best_match
-        else:
-            fallback_responses = [
-                "That's an interesting question! While I might not have a specific answer for that, I'd love to tell you about my experience in full-stack development or my recent projects. What aspect of my background interests you most?",
-                "I'm not sure about that specific topic, but I'm passionate about technology and always learning! Feel free to ask me about my skills, projects, or what drives me as a developer.",
-                "Great question! Though I might not have that particular information, I'm excited to share about my journey in tech. Ask me about my projects, experience, or even what I'm currently learning!",
-                f"Hmm, that's not something I have details on, but here's a fun fact: my favorite color is {self.resume.get('personal', {}).get('favorite_color', 'red')}! 😊 What would you like to know about my technical background?"
-            ]
-            return random.choice(fallback_responses)
+        
+        # 4. If no good match, use AI to generate response and save it
+        print(f"🤖 Generating AI response for new question: {question[:50]}...")
+        ai_response = self.generate_ai_response(question)
+        
+        # Save the new Q&A pair to Firebase for future learning
+        self.save_learned_qa(question, ai_response, ai_generated=True)
+        
+        # Add indicator that this is AI-generated
+        ai_response += "\n\n💡 *This answer was AI-generated. I'm always learning and improving my responses!*"
+        
+        return ai_response
 
-# Create chatbot instance
-chatbot = PersonalChatbot("AdarshBot")
+# Create enhanced chatbot instance
+chatbot = EnhancedPersonalChatbot("AdarshBot")
 
 # Function to get chatbot response (maintaining compatibility with existing code)
 def get_response(question):
