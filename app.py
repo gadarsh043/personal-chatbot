@@ -1,11 +1,48 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
+from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 from flask_cors import CORS
 from chatbot import chatbot, get_response
 from datetime import datetime
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = 'chatbot-admin-secret'
+app.secret_key = 'chatbot-admin-secret-key-2024'
+
+# Admin password
+ADMIN_PASSWORD = 'Adarsh232774'
+
+# ==================== AUTHENTICATION ====================
+
+def login_required(f):
+    """Decorator to require login for admin routes"""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('admin_logged_in'):
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    """Admin login page"""
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        
+        if password == ADMIN_PASSWORD:
+            session['admin_logged_in'] = True
+            flash("Successfully logged in!", "success")
+            return redirect(url_for("admin_dashboard"))
+        else:
+            flash("Invalid password!", "error")
+    
+    return render_template("admin/login.html")
+
+@app.route("/admin/logout")
+def admin_logout():
+    """Admin logout"""
+    session.pop('admin_logged_in', None)
+    flash("Successfully logged out!", "success")
+    return redirect(url_for("admin_login"))
 
 # ==================== CHATBOT ROUTES ====================
 
@@ -51,6 +88,7 @@ def handle_firebase_error():
     return None
 
 @app.route("/admin")
+@login_required
 def admin_dashboard():
     """Admin dashboard - view all Q&A pairs"""
     error = handle_firebase_error()
@@ -80,6 +118,7 @@ def admin_dashboard():
         return render_template("admin/error.html", error=f"Error: {str(e)}")
 
 @app.route("/admin/add", methods=["GET", "POST"])
+@login_required
 def admin_add():
     """Add new Q&A pair"""
     if request.method == "GET":
@@ -118,6 +157,7 @@ def admin_add():
         return redirect(url_for("admin_add"))
 
 @app.route("/admin/edit/<qa_id>", methods=["GET", "POST"])
+@login_required
 def admin_edit(qa_id):
     """Edit existing Q&A pair"""
     error = handle_firebase_error()
@@ -162,6 +202,7 @@ def admin_edit(qa_id):
         return render_template("admin/error.html", error=f"Error: {str(e)}")
 
 @app.route("/admin/delete/<qa_id>", methods=["POST"])
+@login_required
 def admin_delete(qa_id):
     """Delete Q&A pair"""
     error = handle_firebase_error()
@@ -178,6 +219,7 @@ def admin_delete(qa_id):
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/stats")
+@login_required
 def admin_stats():
     """Statistics dashboard"""
     error = handle_firebase_error()

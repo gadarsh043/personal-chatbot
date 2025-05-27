@@ -63,6 +63,13 @@
             display: flex;
             gap: 2rem;
             align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-left {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
         }
         
         .nav-link {
@@ -289,9 +296,14 @@
     <div class="nav">
         <div class="container">
             <div class="nav-links">
-                <a href="/admin" class="nav-link active">Dashboard</a>
-                <a href="/admin/add" class="nav-link">Add Q&A</a>
-                <a href="/admin/stats" class="nav-link">Statistics</a>
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <a href="/admin" class="nav-link active">Dashboard</a>
+                    <a href="/admin/add" class="nav-link">Add Q&A</a>
+                    <a href="/admin/stats" class="nav-link">Statistics</a>
+                </div>
+                <a href="/admin/logout" class="nav-link" style="background: var(--error-color); color: white;">
+                    🚪 Logout
+                </a>
             </div>
         </div>
     </div>
