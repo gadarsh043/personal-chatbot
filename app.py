@@ -1,12 +1,28 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
-from flask_cors import CORS
 from chatbot import chatbot, get_response
 from datetime import datetime
 from functools import wraps
 
+# Optional CORS import
+try:
+    from flask_cors import CORS
+    CORS_AVAILABLE = True
+except ImportError:
+    CORS_AVAILABLE = False
+
 app = Flask(__name__)
-CORS(app)
+if CORS_AVAILABLE:
+    CORS(app)
 app.secret_key = 'chatbot-admin-secret-key-2024'
+
+# Add CORS headers manually if flask-cors not available
+if not CORS_AVAILABLE:
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
 
 # Admin password
 ADMIN_PASSWORD = 'Adarsh232774'

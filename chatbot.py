@@ -1,4 +1,11 @@
-import yaml
+# Optional imports
+try:
+    import yaml
+    YAML_AVAILABLE = True
+except ImportError:
+    YAML_AVAILABLE = False
+    print("⚠️ PyYAML not available - using fallback resume data")
+
 import re
 from difflib import SequenceMatcher
 import random
@@ -103,14 +110,49 @@ class PersonalChatbot:
 
     # ==================== RESUME DATA ====================
     
+    def get_fallback_resume(self):
+        """Fallback resume data when YAML is not available"""
+        return {
+            'personal': {
+                'name': 'Adarsh',
+                'location': 'United States',
+                'email': 'contact@adarsh.dev',
+                'phone': '+1-XXX-XXX-XXXX'
+            },
+            'skills': {
+                'languages': ['Python', 'JavaScript', 'TypeScript'],
+                'frameworks': ['React', 'Vue.js', 'Node.js', 'Flask'],
+                'tools': ['AWS', 'Docker', 'Git', 'MongoDB']
+            },
+            'experience': [{
+                'role': 'Full-Stack Developer',
+                'company': 'Quinbay',
+                'duration': '2022-2023',
+                'responsibilities': ['Built scalable web applications', 'Improved performance by 40%']
+            }],
+            'projects': [
+                {'name': 'PhotoShare'},
+                {'name': 'E-commerce Platform'},
+                {'name': 'AI Chatbot'}
+            ],
+            'education': [{
+                'degree': 'Computer Science Degree',
+                'university': 'University',
+                'year': '2022'
+            }]
+        }
+
     def load_resume(self):
         """Load resume data from YAML file"""
+        if not YAML_AVAILABLE:
+            return self.get_fallback_resume()
+        
         try:
             with open("resume.yaml", "r") as file:
                 return yaml.safe_load(file)
         except FileNotFoundError:
-            print("Warning: resume.yaml not found")
-            return {}
+            print("Warning: resume.yaml not found, using fallback data")
+            return self.get_fallback_resume()
 
     def get_resume_response(self, question):
         """Get predefined response from resume data"""
