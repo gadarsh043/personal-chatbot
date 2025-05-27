@@ -1,17 +1,14 @@
-# Optional imports
-try:
-    import yaml
-    YAML_AVAILABLE = True
-except ImportError:
-    YAML_AVAILABLE = False
-    print("⚠️ PyYAML not available - using fallback resume data")
-
+import yaml
 import re
 from difflib import SequenceMatcher
 import random
 import requests
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Optional Firebase imports
 try:
@@ -110,49 +107,14 @@ class PersonalChatbot:
 
     # ==================== RESUME DATA ====================
     
-    def get_fallback_resume(self):
-        """Fallback resume data when YAML is not available"""
-        return {
-            'personal': {
-                'name': 'Adarsh',
-                'location': 'United States',
-                'email': 'contact@adarsh.dev',
-                'phone': '+1-XXX-XXX-XXXX'
-            },
-            'skills': {
-                'languages': ['Python', 'JavaScript', 'TypeScript'],
-                'frameworks': ['React', 'Vue.js', 'Node.js', 'Flask'],
-                'tools': ['AWS', 'Docker', 'Git', 'MongoDB']
-            },
-            'experience': [{
-                'role': 'Full-Stack Developer',
-                'company': 'Quinbay',
-                'duration': '2022-2023',
-                'responsibilities': ['Built scalable web applications', 'Improved performance by 40%']
-            }],
-            'projects': [
-                {'name': 'PhotoShare'},
-                {'name': 'E-commerce Platform'},
-                {'name': 'AI Chatbot'}
-            ],
-            'education': [{
-                'degree': 'Computer Science Degree',
-                'university': 'University',
-                'year': '2022'
-            }]
-        }
-
     def load_resume(self):
         """Load resume data from YAML file"""
-        if not YAML_AVAILABLE:
-            return self.get_fallback_resume()
-        
         try:
             with open("resume.yaml", "r") as file:
                 return yaml.safe_load(file)
         except FileNotFoundError:
-            print("Warning: resume.yaml not found, using fallback data")
-            return self.get_fallback_resume()
+            print("Warning: resume.yaml not found")
+            return {}
 
     def get_resume_response(self, question):
         """Get predefined response from resume data"""
@@ -229,18 +191,29 @@ class PersonalChatbot:
         
         for qa_id, qa_data in self.learned_qa.items():
             stored_question = qa_data['question'].lower()
+            
+            # Multiple matching strategies
             similarity = SequenceMatcher(None, question_lower, stored_question).ratio()
             
             # Boost score for exact matches
             if question_lower == stored_question:
                 similarity = 1.0
             elif question_lower in stored_question or stored_question in question_lower:
-                similarity += 0.3
+                similarity += 0.2  # Reduced boost
             
+            # Keyword matching boost - more conservative
+            question_words = set(question_lower.split())
+            stored_words = set(stored_question.split())
+            common_words = question_words.intersection(stored_words)
+            if len(common_words) >= 3:  # Require more common words
+                similarity += 0.1
+            
+            # Higher threshold to prevent false matches
             if similarity > best_score and similarity > 0.7:
                 best_score = similarity
                 best_match = qa_data
-        
+                
+        print(f"🔍 Search for '{question[:30]}...' - Best match score: {best_score:.3f}")
         return best_match, best_score
 
     def generate_ai_response(self, question):
@@ -249,18 +222,38 @@ class PersonalChatbot:
             return f"I don't have specific information about '{question}', but I'd love to tell you about my technical skills, projects, or experience. What interests you most?"
         
         try:
+            # Analyze question type for better context
+            question_lower = question.lower()
+            
+            if any(word in question_lower for word in ['india', 'indian', 'country', 'culture']):
+                context = "Questions about India, culture, or geography"
+            elif any(word in question_lower for word in ['coding', 'programming', 'code', 'development', 'tech']):
+                context = "Technical/coding questions - focus on Adarsh's expertise"
+            elif any(word in question_lower for word in ['cooking', 'food', 'recipe', 'eat']):
+                context = "Personal interests outside of work"
+            else:
+                context = "General questions about Adarsh's background"
+
             prompt = f"""You are Adarsh's AI assistant. Answer as Adarsh in first person.
 
 ABOUT ADARSH:
 - Full-stack developer passionate about technology
-- Experience at Quinbay building solutions for 10,000+ users
+- Experience at Quinbay building solutions for 10,000+ users  
 - Skills: JavaScript, Python, React, Vue.js, Node.js, AWS, Docker
 - Projects: PhotoShare, Mushroom Classification, E-commerce platforms
 - Based in the United States, open to opportunities
+- Indian background, appreciates both cultures
 
+QUESTION TYPE: {context}
 QUESTION: {question}
 
-Answer professionally but conversationally (max 150 words). If the question isn't about Adarsh's background, redirect to his expertise."""
+Instructions:
+- Answer authentically as Adarsh would
+- For technical questions: highlight relevant experience
+- For cultural questions: share personal perspective
+- For unrelated topics: acknowledge but redirect to professional strengths
+- Keep responses conversational (max 150 words)
+- If question is inappropriate/unclear, politely redirect to career topics"""
 
             response = requests.post(
                 "https://api.deepseek.com/v1/chat/completions",
@@ -274,7 +267,7 @@ Answer professionally but conversationally (max 150 words). If the question isn'
                     'max_tokens': 300,
                     'temperature': 0.7
                 },
-                timeout=10
+                timeout=20
             )
             
             if response.status_code == 200:
