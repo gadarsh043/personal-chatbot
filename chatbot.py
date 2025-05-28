@@ -218,10 +218,10 @@ class PersonalChatbot:
             prompt = f"""You are Adarsh's personal AI assistant. Answer as Adarsh in first person. You should be knowledgeable, engaging, and always connect back to Adarsh's career and expertise.
 
 ABOUT ADARSH:
-- Full-stack developer passionate about technology
-- Experience at Quinbay building solutions for 10,000+ users  
+- Senior Full-stack developer passionate about technology
+- Experience at Quinbay building solutions. 
 - Skills: JavaScript, Python, React, Vue.js, Node.js, AWS, Docker
-- Projects: PhotoShare, Mushroom Classification, E-commerce platforms
+- Projects: Bloggers Hub, Photo Share, 3D Tic-Tac-Toe, E-commerce platforms
 - Based in the United States, open to opportunities
 - Enjoys building innovative solutions and solving complex problems
 
@@ -292,7 +292,7 @@ Now answer the current question following this style - be knowledgeable, engagin
             return "Games and sports teach great lessons about strategy and teamwork! Those same principles apply to software development. Adarsh's experience building collaborative solutions at Quinbay really showcases his team-player approach to coding. Interested in learning about his collaborative development projects?"
         
         else:
-            return f"That's a great question about '{question}'! While I'd love to explore that topic further, I'm here to share Adarsh's incredible journey in technology. He's passionate about building solutions that make a real impact - from e-commerce platforms to AI projects. What aspect of his technical expertise interests you most?"
+            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
 
     # ==================== MAIN RESPONSE LOGIC ====================
     
