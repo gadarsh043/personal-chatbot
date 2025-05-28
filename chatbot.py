@@ -197,7 +197,7 @@ class PersonalChatbot:
     def generate_ai_response(self, question):
         """Generate AI response using DeepSeek"""
         if not self.deepseek_api_key:
-            return f"I don't have specific information about '{question}', but I'd love to tell you about my technical skills, projects, or experience. What interests you most?"
+            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
         
         try:
             # Get recent context from learned Q&A pairs
@@ -221,7 +221,7 @@ ABOUT ADARSH:
 - Senior Full-stack developer passionate about technology
 - Experience at Quinbay building solutions. 
 - Skills: JavaScript, Python, React, Vue.js, Node.js, AWS, Docker
-- Projects: Bloggers Hub, Photo Share, 3D Tic-Tac-Toe, E-commerce platforms
+- Projects: Bloggers Hub, Photo Share, 3D Tic-Tac-Toe, E-commerce platforms, PortFolio Website, Rizzing App, AI Adventure, Cow Bull Game, Quinbay
 - Based in the United States, open to opportunities
 - Enjoys building innovative solutions and solving complex problems
 
@@ -268,31 +268,11 @@ Now answer the current question following this style - be knowledgeable, engagin
                 return ai_answer
             else:
                 print(f"⚠️ DeepSeek API error: {response.status_code}")
-                return self.generate_fallback_response(question)
+                return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
                 
         except Exception as e:
             print(f"⚠️ AI generation error: {e}")
-            return self.generate_fallback_response(question)
-
-    def generate_fallback_response(self, question):
-        """Fallback response when AI is unavailable"""
-        # Create contextual fallback responses
-        question_lower = question.lower()
-        
-        if any(word in question_lower for word in ['india', 'country', 'culture']):
-            return "That's an interesting question about cultures and places! While I'd love to dive deeper into that topic, I'm here to tell you about Adarsh's amazing journey in tech. He's worked on projects that serve users globally, including building scalable solutions at Quinbay. What would you like to know about his international development experience?"
-        
-        elif any(word in question_lower for word in ['cooking', 'food', 'recipe']):
-            return "Cooking is such an art! Just like coding, it requires creativity, precision, and patience. Speaking of precision, that's exactly what Adarsh brings to his software development work. His React and Node.js projects are crafted with the same attention to detail as a perfect recipe. Would you like to hear about his technical 'ingredients' and development process?"
-        
-        elif any(word in question_lower for word in ['music', 'art', 'creative']):
-            return "Creativity is fascinating! There's actually a lot of creativity in software development too. Adarsh combines technical skills with creative problem-solving to build innovative solutions like PhotoShare and his machine learning projects. Want to explore how he blends creativity with cutting-edge technology?"
-        
-        elif any(word in question_lower for word in ['sports', 'game', 'play']):
-            return "Games and sports teach great lessons about strategy and teamwork! Those same principles apply to software development. Adarsh's experience building collaborative solutions at Quinbay really showcases his team-player approach to coding. Interested in learning about his collaborative development projects?"
-        
-        else:
-            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
+            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now as i am having trouble. Maybe will ask Adarsh to answer that question."
 
     # ==================== MAIN RESPONSE LOGIC ====================
     
@@ -302,11 +282,6 @@ Now answer the current question following this style - be knowledgeable, engagin
             return "Hi! I'm Adarsh's AI assistant. Ask me about his skills, projects, or experience!"
         
         question = question.strip()
-        
-        # Handle common greetings
-        greetings = ['hello', 'hi', 'hey', 'how are you']
-        if any(greeting in question.lower() for greeting in greetings):
-            return f"Hello! I'm {self.resume.get('personal', {}).get('name', 'Adarsh')}, a passionate full-stack developer. What would you like to know about my background?"
         
         # 1. Check Firebase learned Q&A
         learned_match, score = self.search_learned_qa(question)
