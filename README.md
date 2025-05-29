@@ -127,7 +127,13 @@ FIREBASE_CLIENT_EMAIL=your_email
 ### **Embed Widget**
 Add to your portfolio website:
 ```html
-<script src="https://your-domain.vercel.app/embed.js"></script>
+<iframe 
+  src="https://personal-chatbot-q2wp.onrender.com/" 
+  width="400" 
+  height="600" 
+  frameborder="0"
+  title="Chat with Adarsh - AI Assistant">
+</iframe>
 ```
 
 ### **Features:**
@@ -139,7 +145,7 @@ Add to your portfolio website:
 ## 🎨 Customization
 
 ### **Color Scheme**
-The system uses your portfolio colors:
+The system uses my portfolio colors:
 ```css
 :root {
     --primary-color: #2ecc71;    /* Emerald Green */
