@@ -51,19 +51,6 @@ def index():
     """Main chat interface"""
     return render_template("index.html")
 
-@app.route("/widget")
-def widget():
-    """Embeddable chat widget iframe"""
-    # Get position parameter from URL (default: right-bottom)
-    position = request.args.get('position', 'right-bottom')
-    
-    # Validate position parameter
-    valid_positions = ['right-bottom', 'right-top', 'left-bottom', 'left-top']
-    if position not in valid_positions:
-        position = 'right-bottom'
-    
-    return render_template("widget.html", position=position)
-
 @app.route("/chat", methods=["POST"])
 def chat():
     """Handle chat messages"""
