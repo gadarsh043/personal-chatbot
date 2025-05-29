@@ -53,8 +53,16 @@ def index():
 
 @app.route("/widget")
 def widget():
-    """Embeddable chat widget"""
-    return render_template("widget.html")
+    """Embeddable chat widget iframe"""
+    # Get position parameter from URL (default: right-bottom)
+    position = request.args.get('position', 'right-bottom')
+    
+    # Validate position parameter
+    valid_positions = ['right-bottom', 'right-top', 'left-bottom', 'left-top']
+    if position not in valid_positions:
+        position = 'right-bottom'
+    
+    return render_template("widget.html", position=position)
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -63,21 +71,6 @@ def chat():
     question = data.get("question", "")
     response = get_response(question)
     return jsonify({"response": response})
-
-@app.route("/embed.js")
-def embed_script():
-    """JavaScript embed script for external websites"""
-    script = f"""
-(function() {{
-    const widget = document.createElement('iframe');
-    widget.src = '{request.url_root}widget';
-    widget.style.cssText = 'position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;z-index:999999;pointer-events:none;background:transparent';
-    widget.id = 'adarsh-chat-widget';
-    widget.onload = () => widget.style.pointerEvents = 'auto';
-    document.body.appendChild(widget);
-}})();
-"""
-    return script, 200, {'Content-Type': 'application/javascript'}
 
 # ==================== ADMIN ROUTES ====================
 

@@ -125,22 +125,82 @@ FIREBASE_CLIENT_EMAIL=your_email
 ## 📱 Portfolio Integration
 
 ### **Embed Widget**
-Add to your portfolio website:
+
+#### **Method 1: Basic Iframe Embed**
 ```html
 <iframe 
-  src="https://personal-chatbot-q2wp.onrender.com/" 
-  width="400" 
-  height="600" 
+  src="https://personal-chatbot-q2wp.onrender.com/widget" 
+  width="56" 
+  height="56" 
   frameborder="0"
   title="Chat with Adarsh - AI Assistant">
 </iframe>
 ```
 
+#### **Method 2: Dynamic Corner Positioning**
+The widget supports four corner positions through URL parameters:
+
+**Bottom-Right Corner (Default)**
+```html
+<iframe 
+  src="https://personal-chatbot-q2wp.onrender.com/widget?position=right-bottom" 
+  style="position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px;"
+  frameborder="0">
+</iframe>
+```
+
+**Top-Right Corner**
+```html
+<iframe 
+  src="https://personal-chatbot-q2wp.onrender.com/widget?position=right-top" 
+  style="position: fixed; top: 20px; right: 20px; width: 56px; height: 56px;"
+  frameborder="0">
+</iframe>
+```
+
+**Bottom-Left Corner**
+```html
+<iframe 
+  src="https://personal-chatbot-q2wp.onrender.com/widget?position=left-bottom" 
+  style="position: fixed; bottom: 20px; left: 20px; width: 56px; height: 56px;"
+  frameborder="0">
+</iframe>
+```
+
+**Top-Left Corner**
+```html
+<iframe 
+  src="https://personal-chatbot-q2wp.onrender.com/widget?position=left-top" 
+  style="position: fixed; top: 20px; left: 20px; width: 56px; height: 56px;"
+  frameborder="0">
+</iframe>
+```
+
+#### **Method 3: Flexible Inline Embedding**
+Place anywhere in your content:
+```html
+<div style="margin: 20px;">
+  <iframe 
+    src="https://personal-chatbot-q2wp.onrender.com/widget" 
+    width="56" 
+    height="56" 
+    frameborder="0">
+  </iframe>
+</div>
+```
+
+### **Position Parameters:**
+- `right-bottom` (default) - Modal opens upward and leftward
+- `right-top` - Modal opens downward and leftward  
+- `left-bottom` - Modal opens upward and rightward
+- `left-top` - Modal opens downward and rightward
+
 ### **Features:**
-- **Floating chat button** with notification badge
-- **Responsive design** for mobile and desktop
-- **Portfolio color scheme** (emerald green & teal)
-- **Professional appearance** for recruiters
+- **Smart modal positioning** based on corner placement
+- **Mobile responsive design** with automatic adjustments
+- **Notification badge** appears after 3 seconds of inactivity
+- **Floating chat button** with smooth animations
+- **Professional appearance** optimized for recruiters
 
 ## 🎨 Customization
 
