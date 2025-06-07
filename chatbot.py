@@ -27,10 +27,25 @@ class PersonalChatbot:
         try:
             if not firebase_admin._apps:
                 firebase_key_path = os.getenv('FIREBASE_KEY_PATH', 'firebase-key.json')
+                
+                # Check if local key file exists
                 if os.path.exists(firebase_key_path):
                     cred = credentials.Certificate(firebase_key_path)
-                else:
-                    # Production environment variables
+                    print("🔑 Using local Firebase key file")
+                
+                # Check for FIREBASE_CREDENTIALS environment variable (Render setup)
+                elif os.getenv('FIREBASE_CREDENTIALS'):
+                    try:
+                        import json
+                        firebase_config = json.loads(os.getenv('FIREBASE_CREDENTIALS'))
+                        cred = credentials.Certificate(firebase_config)
+                        print("🔑 Using FIREBASE_CREDENTIALS environment variable")
+                    except json.JSONDecodeError as e:
+                        print(f"⚠️ Error parsing FIREBASE_CREDENTIALS JSON: {e}")
+                        return None
+                
+                # Fallback to individual environment variables (Vercel setup)
+                elif os.getenv('FIREBASE_PROJECT_ID'):
                     firebase_config = {
                         "type": "service_account",
                         "project_id": os.getenv('FIREBASE_PROJECT_ID'),
@@ -44,18 +59,27 @@ class PersonalChatbot:
                         "client_x509_cert_url": os.getenv('FIREBASE_CLIENT_CERT_URL')
                     }
                     cred = credentials.Certificate(firebase_config)
+                    print("🔑 Using individual Firebase environment variables")
+                
+                else:
+                    print("⚠️ No Firebase credentials found. Running without Firebase.")
+                    return None
+                
                 firebase_admin.initialize_app(cred)
             
             db = firestore.client()
             print("✅ Firebase initialized successfully")
             return db
+            
         except Exception as e:
             print(f"⚠️ Firebase initialization failed: {e}")
+            print("📝 Continuing without Firebase - some features may be limited")
             return None
 
     def load_learned_qa(self):
         """Load learned Q&A pairs from Firebase"""
         if not self.firebase_db:
+            print("📝 Firebase not available - starting with empty Q&A database")
             return {}
         
         try:
@@ -64,15 +88,17 @@ class PersonalChatbot:
             for doc in docs:
                 data = doc.to_dict()
                 learned_qa[doc.id] = data
-            print(f"📚 Loaded {len(learned_qa)} learned Q&A pairs")
+            print(f"📚 Loaded {len(learned_qa)} learned Q&A pairs from Firebase")
             return learned_qa
         except Exception as e:
-            print(f"⚠️ Error loading learned Q&A: {e}")
+            print(f"⚠️ Error loading learned Q&A from Firebase: {e}")
+            print("📝 Continuing with empty Q&A database")
             return {}
 
     def save_learned_qa(self, question, answer, ai_generated=True):
         """Save new Q&A pair to Firebase"""
         if not self.firebase_db:
+            print("📝 Firebase not available - cannot save Q&A pair")
             return None
         
         try:
@@ -88,10 +114,11 @@ class PersonalChatbot:
             
             self.firebase_db.collection('learned_qa').document(question_id).set(qa_data)
             self.learned_qa[question_id] = qa_data
-            print(f"💾 Saved Q&A: {question[:50]}...")
+            print(f"💾 Saved Q&A to Firebase: {question[:50]}...")
             return question_id
         except Exception as e:
-            print(f"⚠️ Error saving Q&A: {e}")
+            print(f"⚠️ Error saving Q&A to Firebase: {e}")
+            print("📝 Q&A not saved but continuing operation")
             return None
 
     # ==================== RESUME DATA ====================
@@ -283,13 +310,14 @@ Now answer the current question following this style - be knowledgeable, engagin
         
         question = question.strip()
         
-        # 1. Check Firebase learned Q&A
-        learned_match, score = self.search_learned_qa(question)
-        if learned_match and score > 0.7:
-            response = learned_match['answer']
-            if learned_match.get('ai_generated') and not learned_match.get('reviewed'):
-                response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated and may be updated as I learn more!</p>"
-            return response
+        # 1. Check Firebase learned Q&A (only if Firebase is available)
+        if self.firebase_db:
+            learned_match, score = self.search_learned_qa(question)
+            if learned_match and score > 0.7:
+                response = learned_match['answer']
+                if learned_match.get('ai_generated') and not learned_match.get('reviewed'):
+                    response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated and may be updated as I learn more!</p>"
+                return response
         
         # 2. Check resume-based responses
         resume_response = self.get_resume_response(question)
@@ -298,8 +326,13 @@ Now answer the current question following this style - be knowledgeable, engagin
         
         # 3. Generate AI response
         ai_response = self.generate_ai_response(question)
-        self.save_learned_qa(question, ai_response, ai_generated=True)
-        ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. I'm always learning and improving my responses!</p>"
+        
+        # Save to Firebase if available
+        if self.firebase_db:
+            self.save_learned_qa(question, ai_response, ai_generated=True)
+            ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. I'm always learning and improving my responses!</p>"
+        else:
+            ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. Note: Learning features are currently limited.</p>"
         
         return ai_response
 
