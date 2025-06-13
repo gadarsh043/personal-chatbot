@@ -5,7 +5,14 @@ from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
-CORS(app)
+# Configure CORS to allow all origins and methods
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 app.secret_key = 'chatbot-admin-secret-key-2024'
 
 # Admin password
@@ -51,9 +58,11 @@ def index():
     """Main chat interface"""
     return render_template("index.html")
 
-@app.route("/chat", methods=["POST"])
+@app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
     """Handle chat messages"""
+    if request.method == "OPTIONS":
+        return "", 200
     data = request.get_json()
     question = data.get("question", "")
     response = get_response(question)
