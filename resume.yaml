@@ -292,7 +292,7 @@ projects:
     category: Web Apps
 
   - name: 3D Tic-Tac-Toe
-    description: Holographic 3D Tic-Tac-Toe: battle friends or AI, rotate, win with flair!
+    description: "Holographic 3D Tic-Tac-Toe: battle friends or AI, rotate, win with flair!"
     technologies:
       - React
       - 3D Graphics
