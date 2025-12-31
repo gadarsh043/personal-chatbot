@@ -171,14 +171,24 @@ class PersonalChatbot:
             parts.append(f"Frameworks: {', '.join(skills['frameworks'])}")
         if 'tools' in skills:
             parts.append(f"Tools: {', '.join(skills['tools'])}")
+        if 'practices' in skills:
+            parts.append(f"Practices: {', '.join(skills['practices'])}")
         return ". ".join(parts) if parts else "I have various technical skills!"
 
     def format_experience(self):
         """Format work experience"""
         experience = self.resume.get('experience', [])
         if experience:
+            # Show the most recent experience (first in list)
             exp = experience[0]
-            return f"I worked as a {exp.get('role', 'role')} at {exp.get('company', 'company')} ({exp.get('duration', 'duration')}). {'. '.join(exp.get('responsibilities', []))}"
+            role = exp.get('role', 'Developer')
+            company = exp.get('company', 'company')
+            duration = exp.get('duration', 'duration')
+            responsibilities = exp.get('responsibilities', [])
+            
+            if responsibilities:
+                return f"I'm currently working as a {role} at {company} ({duration}). {'. '.join(responsibilities[:2])}."
+            return f"I'm currently working as a {role} at {company} ({duration})."
         return "I have professional experience in technology and software development."
 
     def format_projects(self):
@@ -193,8 +203,17 @@ class PersonalChatbot:
         """Format education"""
         education = self.resume.get('education', [])
         if education:
+            # Show the most recent education (Master's degree)
             edu = education[0]
-            return f"I have a {edu.get('degree', 'degree')} from {edu.get('university', 'university')} ({edu.get('year', 'year')})"
+            degree = edu.get('degree', 'degree')
+            university = edu.get('university', 'university')
+            year = edu.get('year', 'year')
+            gpa = edu.get('gpa', '')
+            location = edu.get('location', '')
+            
+            if gpa and gpa != 'Pursuing':
+                return f"I'm pursuing a {degree} from {university} in {location} ({year}) with a GPA of {gpa}."
+            return f"I'm pursuing a {degree} from {university} in {location} ({year})."
         return "I have a strong educational background in computer science."
 
     # ==================== AI INTEGRATION ====================
@@ -245,12 +264,16 @@ class PersonalChatbot:
             prompt = f"""You are Adarsh's personal AI assistant. Answer as Adarsh in first person. You should be knowledgeable, engaging, and always connect back to Adarsh's career and expertise.
 
 ABOUT ADARSH:
-- Senior Full-stack developer passionate about technology
-- Experience at Quinbay building solutions. 
-- Skills: JavaScript, Python, React, Vue.js, Node.js, AWS, Docker
-- Projects: Bloggers Hub, Photo Share, 3D Tic-Tac-Toe, E-commerce platforms, PortFolio Website, Rizzing App, AI Adventure, Cow Bull Game, Quinbay
-- Based in the United States, open to opportunities
-- Enjoys building innovative solutions and solving complex problems
+- Computer Science graduate student at University of Texas at Dallas (UTD) with GPA 3.78
+- Currently serving as Teaching Assistant for CSE Web Programming course at UTD
+- Experienced Software Developer with track record at Quinbay Technologies (2021-2024)
+- Senior Software Developer who launched Seller Shipping Voucher UI adopted by 10,000+ sellers
+- Reduced testing validation time by 73% through custom VSCode plugin development
+- Boosted build efficiency by 2-5x and site performance by 30% through Vue 3 migration
+- Skills: JavaScript, TypeScript, Python, React, Vue.js, Node.js, Flask, Firebase, MongoDB, AWS, Docker, Kubernetes
+- Projects: Portfolio Website, AI Job Search Automation, Personal AI Chatbot, FitTrackAI, Rizzing App, AI Adventure Companion, VSCode Assist Plugin, PhotoShare, Blogger's Hub, 3D Tic-Tac-Toe, and more
+- Based in Dallas, Texas, United States
+- Open to opportunities and enjoys building innovative AI-powered solutions
 
 INSTRUCTIONS:
 1. Answer ANY question asked with genuine knowledge and enthusiasm

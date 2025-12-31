@@ -11,53 +11,51 @@ personal:
   location: Dallas, Texas, United States
   imdb: https://www.imdb.com/user/ur129777024/lists/
   summary: >
-    Passionate Computer Science graduate student at UTD with expertise in front-end development and full-stack applications. 
-    Specialized in creating intuitive user interfaces and engaging user experiences using modern web technologies. 
-    Experienced in React.js, Vue.js, and AI integration with a strong focus on responsive design and user-centric development.
+    Computer Science graduate student at UTD with expertise in full-stack development and AI integration. 
+    Experienced Software Developer with proven track record at Quinbay Technologies, building scalable applications 
+    and optimizing development workflows. Specialized in React.js, Vue.js, Node.js, and modern web technologies 
+    with a strong focus on performance optimization and user experience.
 
 education:
   - degree: Master of Science in Computer Science
     university: University of Texas at Dallas (UTD)
-    location: Dallas, TX
-    year: 2024 - Present
-    gpa: "Pursuing"
+    location: Dallas, TX, USA
+    year: August 2024 - May 2026
+    gpa: 3.78
     description: >
       Currently pursuing advanced studies in Computer Science with focus on software engineering, 
       user interface design, and modern web development practices.
   
-  - degree: Bachelor's in Computer Science Engineering
-    university: SRM Institute of Science and Technology
-    location: Chennai, India
-    year: 2020 - 2024
+  - degree: Bachelor's in Computer Science
+    university: SRMAP University
+    location: Amravati, India
+    year: August 2017 - May 2021
+    gpa: 3.59
     description: >
       Comprehensive study of computer science fundamentals including data structures, algorithms, 
       software engineering, and web development. Strong foundation in programming languages and development methodologies.
 
 skills:
   languages:
-    - JavaScript (ES5/ES6+)
+    - JavaScript (ES5/ES6)
     - TypeScript
     - Python
-    - Java
-    - C/C++
-    - HTML5
-    - CSS3
+    - C
+    - C++
+    - HTML
+    - CSS
     - PHP
+    - Java
     - SQL
     
-  frontend_frameworks:
-    - React.js (18.3.1)
-    - Vue.js (3.x)
-    - Next.js
-    - Vite
-    - SASS/SCSS
-    - Radix UI
-    - Material UI
-    - Heroicons
-    
-  backend_frameworks:
+  frameworks:
+    - Express
     - Node.js
-    - Express.js
+    - MongoDB
+    - Vue.js
+    - React.js
+    - Flutter
+    - Next.js
     - GraphQL
     - REST APIs
     - Railway.app
@@ -83,24 +81,40 @@ skills:
     - Git/GitHub
     - Docker
     - Kubernetes
-    - Linux
+    - Azure
     - Tesseract.js (OCR)
+    - OpenAI API
+    - n8n
+    - Ollama
     - OpenStreetMap API
     - OpenWeatherMap API
     - React PDF
     - VSCode Extensions
     
-  development_practices:
-    - Agile/SCRUM
+  practices:
+    - Agile
+    - SCRUM
     - CI/CD
+    - Kanban
     - DevOps
-    - Responsive Design
-    - Progressive Web Apps (PWA)
     - Test-Driven Development
     - Code Review
     - API Integration
 
 experience:
+  - role: Teaching Assistant
+    company: University of Texas at Dallas (UTD)
+    location: Dallas, USA
+    duration: August 2025 - Present
+    type: Part-time
+    responsibilities:
+      - Design and evaluate 10+ programming assignments for 80+ students in CSE Web Programming course
+      - Ensure alignment with course objectives and provide timely feedback to enhance learning outcomes
+      - Collaborate with professor to update syllabus and grading rubrics
+    achievements:
+      - Optimized syllabus clarity, reducing student queries by 25%
+      - Enhanced learning outcomes through structured assignment design and evaluation
+
   - role: Senior Software Developer
     company: Quinbay Technologies
     location: Bengaluru, India
@@ -108,301 +122,264 @@ experience:
     type: Full-time
     responsibilities:
       - Launched Seller Shipping Voucher UI using Vue.js and BLUE Design Language System
-      - Achieved rapid adoption by over 10,000 sellers within the first month of release
-      - Collaborated with cross-functional teams to deliver scalable e-commerce solutions
-      - Implemented responsive design patterns ensuring optimal user experience across devices
-      - Participated in code reviews and maintained high code quality standards
+      - Achieved rapid adoption by 10,000+ sellers within 1 month, boosting sales by 20%
+      - Optimized testing workflows with custom VSCode plugin leveraging Jest and TypeScript
     achievements:
-      - Successfully delivered mission-critical UI components for large-scale e-commerce platform
-      - Contributed to significant improvement in seller onboarding and engagement metrics
-      - Gained expertise in enterprise-level Vue.js development and design systems
+      - Slashed validation time by 73% (from 80 to 22 minutes) through workflow optimization
+      - Boosted sales by 20% through streamlined workflows and responsive design
+
+  - role: Software Developer
+    company: Quinbay Technologies
+    location: Bengaluru, India
+    duration: June 2021 - February 2024
+    type: Full-time
+    responsibilities:
+      - Launched Vue 2 to Vue 3 migration with Vite and Pinia, optimizing frontend architecture
+      - Streamlined backend development by refactoring legacy code with TypeScript and Mongoose
+      - Mentored interns in Agile workflows with Git and Storybook
+    achievements:
+      - Boosted build efficiency by 2-5x and site performance by 30%
+      - Reduced development time by 30% through code refactoring
+      - Achieved 100% intern-to-full-time conversion rate through hands-on guidance and code reviews
+
+  - role: Software Engineer Intern
+    company: Coviam Technologies
+    location: Bengaluru, India
+    duration: March 2021 - June 2021
+    type: Internship
+    responsibilities:
+      - Designed onboarding page with React.js and JavaScript, enhancing new user comprehension
+      - Implemented unit tests using Jest and Vue Testing Library
+    achievements:
+      - Enhanced interface responsiveness by 20% across client-facing applications
+      - Increased test coverage by 25%, ensuring feature reliability for internal tools
 
 projects:
-  # High-Impact Projects
-  - name: AI-Powered Portfolio Website
-    description: >
-      Modern, interactive portfolio featuring AI chatbot integration, circadian rhythm visualizer, 
-      and dynamic image morphing. Built with React and deployed to custom domain with GitHub Pages.
-    technologies: 
-      - React.js
-      - SASS
+  - name: Portfolio Website
+    description: The codebase for this portfolio, showcasing my skills and projects.
+    technologies:
+      - React
+      - Vite
       - Firebase
+      - Google Analytics
+      - GitHub Pages
       - Supabase
       - AI Integration
-      - GitHub Pages
+    github: https://github.com/gadarsh043/PortFolio-Page
+    live: https://adarshgella.com
     impact: >
       Showcases advanced front-end development skills with unique interactive features. 
       Demonstrates expertise in modern web technologies and user experience design.
-    github: https://github.com/gadarsh043/PortFolio-Page
-    live: https://adarshgella.com
-    order: 1
-    highlights:
-      - Custom AI chatbot with progressive loading states
-      - Interactive 24-hour circadian rhythm timeline
-      - Responsive design with mobile-first approach
-      - Custom domain deployment with SSL
+    category: Showcase
 
-  - name: Rizzing App - AI Dating Assistant
+  - name: AI Job Search Automation
     description: >
-      AI-powered application that generates contextual pickup lines and chat replies from dating profile screenshots 
-      using OCR and natural language processing.
+      An end-to-end automation pipeline that aggregates, filters, and analyzes 500+ daily job leads using AI. 
+      Performs technical match scoring, visa eligibility checks, and generates personalized cover letters 
+      with company value analysis.
     technologies:
-      - React.js
-      - Node.js
-      - Express.js
-      - Tesseract.js
-      - SASS
-      - Railway.app
-    impact: >
-      Innovative use of AI and OCR technology for real-world application. 
-      Demonstrates full-stack development capabilities and API integration.
-    github: https://github.com/gadarsh043/rizzing-backend
-    live: https://rizzing-frontend.netlify.app/
-    order: 2
-    highlights:
-      - OCR text extraction from images
-      - AI-powered response generation
-      - Full-stack architecture with secure API endpoints
-      - Cloud deployment with scalable infrastructure
+      - n8n
+      - Ollama
+      - Docker
+      - Apify API
+      - Google Sheets API
+      - JavaScript
+      - LLM
+    github: https://github.com/gadarsh043/N8N-JobSearch-Tool
+    live: ""
+    category: AI & ML
 
-  - name: AI Adventure Companion
+  - name: Personal AI Chatbot
     description: >
-      Intelligent travel companion that transforms available time into personalized city exploration experiences 
-      using location services and weather integration.
+      An AI-powered personal chatbot that serves as an intelligent resume assistant. 
+      Features progressive learning, multi-source responses, and admin dashboard for response management. 
+      Maintained 99.9% uptime.
     technologies:
-      - React.js
-      - SASS
-      - Node.js
-      - Netlify Functions
-      - Railway.app
-      - OpenStreetMap
-      - OpenWeatherMap
-    impact: >
-      Combines multiple APIs for comprehensive travel planning solution. 
-      Showcases advanced API integration and user experience design.
-    github: https://github.com/gadarsh043/adventure-companion-backend
-    live: https://adventure-companion.netlify.app
-    order: 3
-    highlights:
-      - Real-time weather and location integration
-      - Personalized itinerary generation
-      - Interactive map interface
-      - Serverless backend architecture
-
-  # Full-Stack Applications
-  - name: Blogger's Hub
-    description: >
-      Dynamic blogging platform with real-time updates, user authentication, and content management system 
-      built with Vue.js and Firebase.
-    technologies:
-      - Vue.js
+      - Flask
+      - DeepSeek AI
       - Firebase
-      - SASS
-      - Real-time Database
-    impact: >
-      Comprehensive content management system with modern UI/UX. 
-      Demonstrates proficiency in Vue.js ecosystem and real-time data handling.
-    github: https://github.com/gadarsh043/blogPage
-    live: https://g-adarsh-sonu.netlify.app/
-    order: 4
-    highlights:
-      - Real-time content updates
-      - User authentication and authorization
-      - Responsive design with modern UI
-      - SEO-optimized blog structure
+      - YAML Configuration
+      - Render
+      - HTML/CSS/JavaScript
+    github: https://github.com/gadarsh043/personal-chatbot
+    live: https://personal-chatbot-q2wp.onrender.com/
+    category: AI & ML
 
-  - name: PhotoShare Application
+  - name: FitTrackAI
     description: >
-      Social photo-sharing platform with MongoDB integration, featuring user profiles, image uploads, 
-      and social interactions with comprehensive backend API.
+      A comprehensive web-based fitness and nutrition tracking application designed to help users achieve 
+      their gym physique goals with detailed progress tracking and AI-powered insights. Reached 50+ active users.
     technologies:
-      - React.js
-      - MongoDB
-      - Node.js
-      - Express.js
-      - SASS
-    impact: >
-      Full-stack social media application demonstrating database design and user interaction patterns. 
-      Video demonstration showcases comprehensive functionality.
-    github: https://github.com/gadarsh043/photoSharingApp
-    live: https://youtu.be/k5Rc1Fi5kbU?si=RCmhSil41hWrcb-A
-    order: 5
-    highlights:
-      - MongoDB database design and optimization
-      - Image upload and processing
-      - User authentication and social features
-      - RESTful API development
-
-  - name: QuinBook - Social Network
-    description: >
-      Lightweight Facebook-inspired social networking platform with modern UI design and user interaction features 
-      built using Vue.js framework.
-    technologies:
-      - Vue.js
-      - SASS
-      - Component Architecture
-    impact: >
-      Demonstrates ability to recreate complex social media interfaces with clean, maintainable code. 
-      Showcases Vue.js expertise and UI/UX design skills.
-    github: https://github.com/gadarsh043/QuinBook-UI
-    live: https://drive.google.com/file/d/1AX8LXC3HQwssu-Yb2lT6jEcIvIt9uXS8/view?usp=sharing
-    order: 6
-    highlights:
-      - Social media interface recreation
-      - Component-based architecture
-      - Responsive design implementation
-      - Modern CSS styling techniques
-
-  # Interactive Games & Tools
-  - name: 3D Tic-Tac-Toe
-    description: >
-      Holographic 3D Tic-Tac-Toe game with advanced gameplay mechanics, AI opponent, and immersive visual effects 
-      built with React and modern web technologies.
-    technologies:
-      - React.js
+      - React
+      - Firebase
+      - Chart.js
+      - Tailwind CSS
       - Vite
-      - Heroicons
-      - 3D CSS Transforms
-    impact: >
-      Creative implementation of classic game with modern twist. 
-      Demonstrates advanced CSS and React state management skills.
-    github: https://github.com/gadarsh043/3D-Tic-Tac-Toe
-    live: https://3d-tic-tac.netlify.app/
-    order: 7
-    highlights:
-      - 3D visual effects and animations
-      - AI opponent implementation
-      - Responsive game controls
-      - Modern game UI design
+      - Google OAuth
+    github: https://github.com/gadarsh043/Fit-Track-AI
+    live: https://fit-track-ai.netlify.app/
+    category: Web Apps
 
-  - name: CowBull Game
-    description: >
-      Interactive number guessing game similar to 'Mastermind' with engaging UI and progressive difficulty levels 
-      implemented in Vue.js.
-    technologies:
-      - Vue.js
-      - SASS
-      - Game Logic
-    impact: >
-      Clean implementation of classic puzzle game with modern web technologies. 
-      Demonstrates logical programming and user interaction design.
-    github: https://github.com/gadarsh043/cow_bull_game
-    live: https://cow-bull-game.netlify.app/
-    order: 8
-    highlights:
-      - Game logic implementation
-      - Progressive difficulty system
-      - Intuitive user interface
-      - Responsive game design
-
-  # Developer Tools & Utilities
   - name: VSCode Assist Plugin
     description: >
-      Visual Studio Code extension designed to help developers create Jest test cases effortlessly, 
-      improving development workflow and testing efficiency.
+      Engineered a custom VSCode plugin to automate Jest test case generation, slashing validation time 
+      from 80 to 22 minutes (73% reduction) and streamlining development workflows.
     technologies:
-      - JavaScript
-      - VSCode API
+      - VSCode Extension API
       - Jest Integration
-    impact: >
-      Developer productivity tool that streamlines testing workflow. 
-      Demonstrates understanding of developer tools and VSCode extension development.
+      - TypeScript
+      - Developer Tools
     github: https://github.com/gadarsh043/QB-Assist-VsCode-Plugin
-    order: 9
-    highlights:
-      - VSCode extension development
-      - Jest test automation
-      - Developer workflow optimization
-      - API integration with VSCode
+    live: ""
+    category: Utilities
+
+  - name: Rizzing App
+    description: >
+      Built an AI-driven response generator with OCR integration, utilizing dating profile screenshots 
+      to provide context-aware replies with optimized responsiveness. Processed 100+ profiles daily.
+    technologies:
+      - React
+      - Node.js
+      - Tesseract.js OCR
+      - OpenAI API
+      - Railway
+    github: https://github.com/gadarsh043/rizzing-backend
+    live: https://rizzing-frontend.netlify.app/
+    category: AI & ML
+
+  - name: PhotoShare
+    description: A photo-sharing application with MongoDB integration.
+    technologies:
+      - React
+      - MongoDB
+      - Express.js
+      - File Upload
+      - Authentication
+    github: https://github.com/gadarsh043/photoSharingApp
+    live: https://youtu.be/k5Rc1Fi5kbU?si=RCmhSil41hWrcb-A
+    category: Web Apps
+
+  - name: AI Adventure Companion
+    description: An AI sidekick that turns hours into epic city escapes.
+    technologies:
+      - React
+      - OpenStreetMap API
+      - OpenWeatherMap API
+      - Netlify Functions
+    github: https://github.com/gadarsh043/adventure-companion-backend
+    live: https://adventure-companion.netlify.app
+    category: AI & ML
+
+  - name: Blogger's Hub
+    description: A dynamic blogging platform with real-time updates.
+    technologies:
+      - Vue.js
+      - Firebase Firestore
+      - Real-time Database
+      - Netlify
+    github: https://github.com/gadarsh043/blogPage
+    live: https://g-adarsh-sonu.netlify.app/
+    category: Web Apps
+
+  - name: QuinBook
+    description: A lightweight Facebook-inspired social networking platform.
+    technologies:
+      - Vue.js
+      - Component Architecture
+      - Social Media Features
+    github: https://github.com/gadarsh043/QuinBook-UI
+    live: https://drive.google.com/file/d/1AX8LXC3HQwssu-Yb2lT6jEcIvIt9uXS8/view?usp=sharing
+    category: Web Apps
+
+  - name: 3D Tic-Tac-Toe
+    description: Holographic 3D Tic-Tac-Toe: battle friends or AI, rotate, win with flair!
+    technologies:
+      - React
+      - 3D Graphics
+      - AI Algorithm
+      - Game Logic
+      - Heroicons
+    github: https://github.com/gadarsh043/3D-Tic-Tac-Toe
+    live: https://3d-tic-tac.netlify.app/
+    category: Games
+
+  - name: CowBull Game
+    description: An interactive guessing game like 'Mastermind'.
+    technologies:
+      - Vue.js
+      - Game Logic
+      - Interactive UI
+      - Local Storage
+    github: https://github.com/gadarsh043/cow_bull_game
+    live: https://cow-bull-game.netlify.app/
+    category: Games
+
+  - name: Online Notepad
+    description: Secure online notepad that automatically saves your work locally.
+    technologies:
+      - React
+      - LocalStorage
+      - Auto-save
+      - PWA Features
+    github: https://github.com/gadarsh043/online-notepad
+    live: https://autosave-notepad.netlify.app/
+    category: Utilities
 
   - name: IP Tracker
-    description: >
-      Comprehensive IP address location and tracking tool with geographic visualization and detailed network information 
-      using external APIs and mapping services.
+    description: A tool to locate and track IP addresses.
     technologies:
       - Vue.js
-      - SASS
       - IP Geolocation API
-      - Mapping Integration
-    impact: >
-      Practical utility tool demonstrating API integration and data visualization skills. 
-      Clean, functional interface with real-world application.
+      - Maps Integration
+      - Real-time Data
     github: https://github.com/gadarsh043/ip-tracker
     live: https://ip-tracking-website.netlify.app
-    order: 10
-    highlights:
-      - IP geolocation services integration
-      - Interactive mapping interface
-      - Real-time data processing
-      - Clean, minimalist UI design
+    category: Utilities
 
-  # Business Applications
-  - name: TakeInterview - Interview Management
-    description: >
-      Streamlined user interface for managing and conducting technical interviews with scheduling, 
-      candidate management, and interview workflow optimization.
+  - name: TakeInterview
+    description: A streamlined UI for managing and conducting technical interviews.
     technologies:
       - Vue.js
-      - SASS
-      - Interview Management System
-    impact: >
-      Business-focused application addressing real HR and recruitment needs. 
-      Demonstrates understanding of enterprise workflow requirements.
+      - Interview Management
+      - UI/UX Design
+      - Admin Panel
     github: https://github.com/gadarsh043/TakeInterview-UI
-    order: 11
-    highlights:
-      - Interview scheduling system
-      - Candidate management interface
-      - Workflow optimization features
-      - Professional UI design
+    live: ""
+    category: Web Apps
 
   - name: Coffee Billing App
-    description: >
-      Efficient point-of-sale system for coffee shops featuring order management, billing calculations, 
-      and customer tracking with intuitive interface design.
+    description: A simple and efficient coffee shop billing system for tracking orders.
     technologies:
       - Vue.js
-      - SASS
-      - Billing System Logic
-    impact: >
-      Practical business application solving real-world retail challenges. 
-      Demonstrates ability to create functional business tools.
+      - Billing System
+      - Order Management
+      - POS Interface
     github: https://github.com/gadarsh043/CustomerBillingSystem-UI
-    order: 12
-    highlights:
-      - Point-of-sale system development
-      - Order management functionality
-      - Customer billing and tracking
-      - Business workflow optimization
-
-certifications:
-  - name: Advanced React Development
-    provider: Frontend Masters
-    year: 2024
-    description: Advanced React patterns, performance optimization, and modern development practices
-    
-  - name: Full-Stack Web Development
-    provider: freeCodeCamp
-    year: 2023
-    description: Comprehensive full-stack development including frontend and backend technologies
+    live: ""
+    category: Web Apps
 
 achievements:
-  - Successfully launched portfolio website with AI integration, showcasing innovative use of modern web technologies
-  - Built 12+ full-stack applications demonstrating proficiency across multiple technology stacks
+  - Jonsson School Dean's Graduate Scholarship, UTD (August 2024 - May 2025)
+  - Merit Based Tuition Fee Aid, SRMAP (August 2017 - June 2021)
+  - Secured 2nd Runner-Up in UXperience 2024: The First Draft (November 2024)
   - Achieved 10,000+ seller adoption for enterprise Vue.js application at Quinbay Technologies
-  - Created unique circadian rhythm visualizer feature, demonstrating creative problem-solving and UX innovation
-  - Developed AI-powered applications showcasing integration of machine learning with web technologies
-  - Published multiple open-source projects contributing to the developer community
-  - Maintained active YouTube channel sharing coding insights and technology content
+  - Reduced testing validation time by 73% through custom VSCode plugin development
+  - Boosted build efficiency by 2-5x and site performance by 30% through Vue 3 migration
+  - Maintained 99.9% uptime for Personal AI Chatbot deployed on Render
+  - Reached 50+ active users for FitTrackAI fitness tracking application
+  - Processed 100+ profiles daily for Rizzing App AI dating assistant
+  - 100% intern-to-full-time conversion rate through mentorship at Quinbay Technologies
 
 interests:
   technical:
     - Front-end Architecture
     - User Experience Design
+    - Full-Stack Development
     - AI Integration in Web Apps
-    - Progressive Web Applications
     - Performance Optimization
-    - Accessibility in Web Design
+    - Test-Driven Development
+    - API Development
+    - Cloud Deployment
     
   personal:
     - Creating YouTube content about coding and technology
@@ -411,6 +388,10 @@ interests:
     - Exploring new web technologies
     - Contributing to open-source projects
     - Dancing and social activities
+    - Coding and technology
+    - Reading tech blogs
+    - Exploring cloud technologies
+    - Open-source contributions
 
 languages:
   - English (Fluent)
