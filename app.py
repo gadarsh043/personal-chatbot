@@ -60,6 +60,7 @@ def index():
     return render_template("index.html")
 
 @app.route("/api/chat", methods=["POST", "OPTIONS"])
+@app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
     """Handle chat messages"""
     if request.method == "OPTIONS":
