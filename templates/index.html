@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with Adarsh - AI Resume Assistant</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Marked.js for markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --primary-color: #2ecc71; /* Emerald Green */
@@ -429,6 +431,14 @@
     </div>
 
     <script>
+        // Configure marked options to be safe but allow basic markdown
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: false,
+            mangle: false
+        });
+
         async function sendMessage() {
             const input = document.getElementById("input");
             const messages = document.getElementById("messages");
@@ -445,10 +455,10 @@
 
             try {
                 // Send question to Flask backend
-                const response = await fetch("/chat", {
+                const response = await fetch("/api/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ question })
+                    body: JSON.stringify({ message: question })
                 });
                 
                 const data = await response.json();
@@ -473,8 +483,14 @@
             avatar.textContent = sender === 'user' ? 'Y' : 'A';
             
             const content = document.createElement("div");
-            content.className = "message-content";
-            content.innerHTML = text;
+            content.className = "message-content markdown-body";
+            
+            // If it's a bot message, parse markdown. If user, escape HTML to be safe
+            if (sender === 'bot') {
+                content.innerHTML = marked.parse(text);
+            } else {
+                content.textContent = text;
+            }
             
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(content);

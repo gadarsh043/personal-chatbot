@@ -4,7 +4,7 @@
 
 This enhanced chatbot system features:
 - **2-way learning**: Learns from new questions and improves over time
-- **DeepSeek AI integration**: Generates intelligent responses for unknown questions
+- **Groq AI integration**: Generates intelligent responses for unknown questions
 - **Firebase storage**: Persists learned Q&A pairs across sessions
 - **Admin interface**: Review and edit AI-generated responses
 - **Portfolio integration**: Embeddable widget for your website
@@ -17,11 +17,11 @@ This enhanced chatbot system features:
 pip install -r requirements.txt
 ```
 
-### 2. Set Up DeepSeek AI
+### 2. Set Up Groq AI
 
-1. Visit [DeepSeek Platform](https://platform.deepseek.com/)
+1. Visit [Groq Platform](https://platform.groq.com/)
 2. Create an account and get your API key
-3. Check your credits at https://platform.deepseek.com/usage
+3. Check your credits at https://platform.groq.com/usage
 
 ### 3. Set Up Firebase (Optional but Recommended)
 
@@ -38,8 +38,8 @@ pip install -r requirements.txt
 Create a `.env` file in your project root:
 
 ```env
-# DeepSeek AI Configuration
-DEEPSEEK_API_KEY=your_deepseek_api_key_here
+# Groq AI Configuration
+GROQ_API_KEY=your_groq_api_key_here
 
 # Firebase Configuration (Method 1: Service Account File)
 FIREBASE_KEY_PATH=firebase-key.json
@@ -70,11 +70,11 @@ python admin.py
 The system will work without Firebase but won't persist learned Q&A pairs:
 
 ```bash
-# Just set DeepSeek API key
-DEEPSEEK_API_KEY=your_api_key
+# Just set Groq API key
+GROQ_API_KEY=your_api_key
 ```
 
-### Running Without DeepSeek AI
+### Running Without Groq AI
 
 The system will use fallback responses for unknown questions:
 
@@ -87,7 +87,7 @@ The system will use fallback responses for unknown questions:
 Full functionality with AI responses and persistent learning:
 
 ```bash
-DEEPSEEK_API_KEY=your_api_key
+GROQ_API_KEY=your_api_key
 FIREBASE_KEY_PATH=firebase-key.json
 ```
 
@@ -102,7 +102,7 @@ User Question
      ↓ (if not found)
 2. Check resume.yaml responses
      ↓ (if not found)
-3. Generate AI response with DeepSeek
+3. Generate AI response with Groq
      ↓
 4. Save to Firebase for future learning
      ↓
@@ -148,7 +148,7 @@ Access the admin interface at `http://localhost:5001/admin`
 
 1. **Set Environment Variables** in Vercel dashboard:
    ```
-   DEEPSEEK_API_KEY=your_api_key
+   GROQ_API_KEY=your_api_key
    FIREBASE_PROJECT_ID=your_project_id
    FIREBASE_PRIVATE_KEY=your_private_key
    FIREBASE_CLIENT_EMAIL=your_email
@@ -177,9 +177,9 @@ service cloud.firestore {
 
 ## 🔍 Monitoring & Analytics
 
-### DeepSeek Usage Tracking
+### Groq Usage Tracking
 
-Monitor your API usage at: https://platform.deepseek.com/usage
+Monitor your API usage at: https://platform.groq.com/usage
 
 ### Firebase Usage
 
@@ -244,7 +244,7 @@ Update CSS variables in templates:
    - Verify project ID
    - Ensure Firestore is enabled
 
-2. **DeepSeek API Errors**
+2. **Groq API Errors**
    - Verify API key is correct
    - Check credit balance
    - Ensure proper request format
@@ -310,7 +310,7 @@ limiter = Limiter(app, key_func=get_remote_address)
 
 ### Multiple Chatbots
 - Use different Firebase collections
-- Separate DeepSeek API keys
+- Separate Groq API keys
 - Implement multi-tenant architecture
 
 ## 🤝 Contributing
@@ -327,7 +327,7 @@ To contribute to this project:
 
 For issues and questions:
 - Check the troubleshooting section
-- Review Firebase and DeepSeek documentation
+- Review Firebase and Groq documentation
 - Create an issue in the repository
 
 ---

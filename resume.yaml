@@ -11,10 +11,37 @@ personal:
   location: Dallas, Texas, United States
   imdb: https://www.imdb.com/user/ur129777024/lists/
   summary: >
-    Computer Science graduate student at UTD with expertise in full-stack development and AI integration. 
-    Experienced Software Developer with proven track record at Quinbay Technologies, building scalable applications 
-    and optimizing development workflows. Specialized in React.js, Vue.js, Node.js, and modern web technologies 
-    with a strong focus on performance optimization and user experience.
+    Computer Science graduate student at UTD with expertise in full-stack development, 
+    Generative AI, and modern web architectures. Experienced Software Developer with a proven track 
+    record at Quinbay Technologies and building scalable, production-ready AI applications like Rahify.
+    Specialized in React.js, FastAPI, Node.js, and integrating LLMs to create seamless user experiences.
+
+personal_facts:
+  birthday: April 18, 2000
+  favorite_color: Red
+  favorite_food: Biryani, Mexican cuisine
+  favorite_place_visited: Seattle
+  dream_destination: London
+  favorite_movie: Kick (Telugu film), Harry Potter series
+  favorite_tv_show: Friends
+  favorite_character: Neville Longbottom
+  favorite_sport: Cricket
+  favorite_team: Mumbai Indians (IPL)
+  music_preference: Slow, meaningful songs
+  favorite_song: "\"Aarambh\" by Piyush Mishra"
+  preferred_content: YouTube (tech/coding) and Marvel comics
+  current_pets: 2 cats — Ash and Shadow
+  past_pets: 3 dogs — Lucky, Pluto, Yonex
+  drink_of_choice: Regular Coke (not a coffee or tea person!)
+
+career_goals:
+  role_preference: Open to all — specializes in Frontend and Generative AI development
+  company_preference: Doesn't matter — just wants to love the work
+  relocation: Open to relocation anywhere in the USA
+  work_mode: No preference — remote, hybrid, or on-site are all fine
+  currently_exploring: Generative AI development, continuously improving skills
+  graduation: May 2026 (MS Computer Science, UTD)
+  most_proud_project: "Rahify (built solo end-to-end: design, product management, code, payment gateway, analytics)"
 
 education:
   - degree: Master of Science in Computer Science
@@ -49,17 +76,15 @@ skills:
     - SQL
     
   frameworks:
-    - Express
-    - Node.js
-    - MongoDB
-    - Vue.js
     - React.js
-    - Flutter
+    - Vue.js
+    - Node.js
+    - Express
+    - FastAPI
     - Next.js
+    - Flutter
     - GraphQL
     - REST APIs
-    - Railway.app
-    - Netlify Functions
     
   databases:
     - MongoDB
@@ -79,17 +104,18 @@ skills:
     
   tools_and_technologies:
     - Git/GitHub
+    - Groq API
+    - OpenAI API
+    - SerpAPI
+    - Google Places API
+    - PostHog
+    - Server-Sent Events (SSE)
     - Docker
     - Kubernetes
-    - Azure
+    - Recharts
     - Tesseract.js (OCR)
-    - OpenAI API
     - n8n
     - Ollama
-    - OpenStreetMap API
-    - OpenWeatherMap API
-    - React PDF
-    - VSCode Extensions
     
   practices:
     - Agile
@@ -109,11 +135,11 @@ experience:
     type: Part-time
     responsibilities:
       - Design and evaluate 10+ programming assignments for 80+ students in CSE Web Programming course
-      - Ensure alignment with course objectives and provide timely feedback to enhance learning outcomes
-      - Collaborate with professor to update syllabus and grading rubrics
+      - Built and maintain 'Student Weekly Tracker', a full-stack React and Supabase tool used by 80+ students
+      - Automated weekly progress reporting, grade calculation, and PDF report generation
     achievements:
+      - Developed a full-stack academic tracking tool that significantly reduced manual grading effort
       - Optimized syllabus clarity, reducing student queries by 25%
-      - Enhanced learning outcomes through structured assignment design and evaluation
 
   - role: Senior Software Developer
     company: Quinbay Technologies
@@ -155,60 +181,30 @@ experience:
       - Increased test coverage by 25%, ensuring feature reliability for internal tools
 
 projects:
-  - name: Portfolio Website
-    description: The codebase for this portfolio, showcasing my skills and projects.
+  - name: Rahify
+    description: >
+      AI-Powered Travel Planning Platform. Enter trip details to get personalized itineraries with real places, 
+      real flights, cost quotes, and downloadable trip documents. Built with a zero-hallucination architecture 
+      that fetches verified Google Places data before utilizing AI.
     technologies:
       - React
-      - Vite
-      - Firebase
-      - Google Analytics
-      - GitHub Pages
+      - FastAPI
       - Supabase
-      - AI Integration
-    github: https://github.com/gadarsh043/PortFolio-Page
-    live: https://adarshgella.com
+      - Groq LLM
+      - Google Places API
+      - SerpAPI
+      - PostHog
+    github: https://github.com/gadarsh043/rahi-ai
+    live: https://rahify.com
+    category: AI & ML
     impact: >
-      Showcases advanced front-end development skills with unique interactive features. 
-      Demonstrates expertise in modern web technologies and user experience design.
-    category: Showcase
-
-  - name: AI Job Search Automation
-    description: >
-      An end-to-end automation pipeline that aggregates, filters, and analyzes 500+ daily job leads using AI. 
-      Performs technical match scoring, visa eligibility checks, and generates personalized cover letters 
-      with company value analysis.
-    technologies:
-      - n8n
-      - Ollama
-      - Docker
-      - Apify API
-      - Google Sheets API
-      - JavaScript
-      - LLM
-    github: https://github.com/gadarsh043/N8N-JobSearch-Tool
-    live: ""
-    category: AI & ML
-
-  - name: Personal AI Chatbot
-    description: >
-      An AI-powered personal chatbot that serves as an intelligent resume assistant. 
-      Features progressive learning, multi-source responses, and admin dashboard for response management. 
-      Maintained 99.9% uptime.
-    technologies:
-      - Flask
-      - DeepSeek AI
-      - Firebase
-      - YAML Configuration
-      - Render
-      - HTML/CSS/JavaScript
-    github: https://github.com/gadarsh043/personal-chatbot
-    live: https://personal-chatbot-q2wp.onrender.com/
-    category: AI & ML
+      Flagship project demonstrating end-to-end product development, multi-service API orchestration, 
+      and advanced AI prompt engineering with RAG principles.
 
   - name: FitTrackAI
     description: >
       A comprehensive web-based fitness and nutrition tracking application designed to help users achieve 
-      their gym physique goals with detailed progress tracking and AI-powered insights. Reached 50+ active users.
+      their gym physique goals with detailed progress tracking and AI-powered insights.
     technologies:
       - React
       - Firebase
@@ -219,6 +215,23 @@ projects:
     github: https://github.com/gadarsh043/Fit-Track-AI
     live: https://fit-track-ai.netlify.app/
     category: Web Apps
+    impact: Reached 50+ active users.
+
+  - name: N8N JobSearch & Lead Engine
+    description: >
+      An end-to-end automation pipeline that aggregates, filters, and analyzes 500+ daily job leads using AI. 
+      Performs technical match scoring, visa eligibility checks, and generates personalized cover letters 
+      with company value analysis.
+    technologies:
+      - n8n
+      - Ollama
+      - Docker
+      - Apify API
+      - Google Sheets API
+      - LLM
+    github: https://github.com/gadarsh043/N8N-JobSearch-Tool
+    live: ""
+    category: AI & ML
 
   - name: VSCode Assist Plugin
     description: >
@@ -233,6 +246,22 @@ projects:
     live: ""
     category: Utilities
 
+  - name: Personal AI Chatbot
+    description: >
+      An AI-powered personal chatbot that serves as an intelligent resume assistant. 
+      Features progressive learning, multi-source responses, and an admin dashboard for response management. 
+      Maintained 99.9% uptime.
+    technologies:
+      - Flask
+      - Groq AI
+      - DeepSeek AI
+      - Firebase
+      - YAML Configuration
+      - Render
+    github: https://github.com/gadarsh043/personal-chatbot
+    live: https://personal-chatbot-q2wp.onrender.com/
+    category: AI & ML
+
   - name: Rizzing App
     description: >
       Built an AI-driven response generator with OCR integration, utilizing dating profile screenshots 
@@ -240,23 +269,52 @@ projects:
     technologies:
       - React
       - Node.js
-      - Tesseract.js OCR
+      - Tesseract.js (OCR)
       - OpenAI API
       - Railway
     github: https://github.com/gadarsh043/rizzing-backend
     live: https://rizzing-frontend.netlify.app/
     category: AI & ML
 
-  - name: PhotoShare
-    description: A photo-sharing application with MongoDB integration.
+  - name: Portfolio Website
+    description: The codebase for my portfolio, showcasing my skills, projects, and AI assistant.
     technologies:
       - React
-      - MongoDB
-      - Express.js
-      - File Upload
-      - Authentication
-    github: https://github.com/gadarsh043/photoSharingApp
-    live: https://youtu.be/k5Rc1Fi5kbU?si=RCmhSil41hWrcb-A
+      - Vite
+      - Firebase
+      - Route Parsing
+      - GitHub Pages
+    github: https://github.com/gadarsh043/PortFolio-Page
+    live: https://adarshgella.com
+    category: Showcase
+
+  - name: Student Weekly Tracker
+    description: >
+      Academic progress tracking system built for the UTD CS 4485 Senior Design course. Supports attendance 
+      marking, effort scoring, auto-calculated letter grades, weekly PDF exports, CSV roster import, and 
+      visual dashboards for over 80 students.
+    technologies:
+      - React
+      - Vite
+      - Supabase
+      - Google OAuth
+      - Recharts
+    github: https://github.com/gadarsh043/Student-Weekly-Tracker
+    live: ""
+    category: Web Apps
+
+  - name: Charging Station Analytics Dashboard
+    description: >
+      Interactive analytics dashboard for EV charging station KPI monitoring with real-time data visualization, 
+      variable management, and export functionality.
+    technologies:
+      - React 18
+      - Vite
+      - Firebase Auth
+      - Recharts
+      - SCSS
+    github: https://github.com/gadarsh043/Answers-AI
+    live: ""
     category: Web Apps
 
   - name: AI Adventure Companion
@@ -275,40 +333,34 @@ projects:
     technologies:
       - Vue.js
       - Firebase Firestore
-      - Real-time Database
-      - Netlify
     github: https://github.com/gadarsh043/blogPage
     live: https://g-adarsh-sonu.netlify.app/
     category: Web Apps
 
-  - name: QuinBook
-    description: A lightweight Facebook-inspired social networking platform.
+  - name: PhotoShare
+    description: A photo-sharing application with MongoDB integration.
     technologies:
-      - Vue.js
-      - Component Architecture
-      - Social Media Features
-    github: https://github.com/gadarsh043/QuinBook-UI
-    live: https://drive.google.com/file/d/1AX8LXC3HQwssu-Yb2lT6jEcIvIt9uXS8/view?usp=sharing
+      - React
+      - MongoDB
+      - Express.js
+    github: https://github.com/gadarsh043/photoSharingApp
+    live: https://youtu.be/k5Rc1Fi5kbU?si=RCmhSil41hWrcb-A
     category: Web Apps
 
   - name: 3D Tic-Tac-Toe
-    description: "Holographic 3D Tic-Tac-Toe: battle friends or AI, rotate, win with flair!"
+    description: Holographic 3D Tic-Tac-Toe allowing you to battle friends or AI, rotate the board, and win with flair.
     technologies:
       - React
       - 3D Graphics
       - AI Algorithm
-      - Game Logic
-      - Heroicons
     github: https://github.com/gadarsh043/3D-Tic-Tac-Toe
     live: https://3d-tic-tac.netlify.app/
     category: Games
 
   - name: CowBull Game
-    description: An interactive guessing game like 'Mastermind'.
+    description: An interactive guessing game similar to 'Mastermind'.
     technologies:
       - Vue.js
-      - Game Logic
-      - Interactive UI
       - Local Storage
     github: https://github.com/gadarsh043/cow_bull_game
     live: https://cow-bull-game.netlify.app/
@@ -319,19 +371,16 @@ projects:
     technologies:
       - React
       - LocalStorage
-      - Auto-save
       - PWA Features
     github: https://github.com/gadarsh043/online-notepad
     live: https://autosave-notepad.netlify.app/
     category: Utilities
 
   - name: IP Tracker
-    description: A tool to locate and track IP addresses.
+    description: A tool to locate and track IP addresses with map integration.
     technologies:
       - Vue.js
       - IP Geolocation API
-      - Maps Integration
-      - Real-time Data
     github: https://github.com/gadarsh043/ip-tracker
     live: https://ip-tracking-website.netlify.app
     category: Utilities
@@ -340,9 +389,6 @@ projects:
     description: A streamlined UI for managing and conducting technical interviews.
     technologies:
       - Vue.js
-      - Interview Management
-      - UI/UX Design
-      - Admin Panel
     github: https://github.com/gadarsh043/TakeInterview-UI
     live: ""
     category: Web Apps
@@ -351,14 +397,33 @@ projects:
     description: A simple and efficient coffee shop billing system for tracking orders.
     technologies:
       - Vue.js
-      - Billing System
-      - Order Management
       - POS Interface
     github: https://github.com/gadarsh043/CustomerBillingSystem-UI
     live: ""
     category: Web Apps
 
+  - name: NLP Feed-Forward & Recurrent Neural Networks
+    description: Academic NLP project implementing Feed-Forward Neural Networks and RNNs for natural language processing tasks.
+    technologies:
+      - Python
+      - PyTorch
+      - Machine Learning
+    github: https://github.com/gadarsh043/NLP_FFNN_RNN
+    live: ""
+    category: Academic
+
+  - name: NLP N-grams Model
+    description: Academic NLP project constructing and evaluating language generation through N-gram probabilistic models.
+    technologies:
+      - Python
+      - Natural Language Processing
+    github: https://github.com/gadarsh043/NLP_N-gramsmodel
+    live: ""
+    category: Academic
+
 achievements:
+  - Launched Rahify, an AI travel planner at rahify.com with zero-hallucination architecture
+  - Built Student Weekly Tracker serving 80+ CS 4485 students at UTD with automated grading
   - Jonsson School Dean's Graduate Scholarship, UTD (August 2024 - May 2025)
   - Merit Based Tuition Fee Aid, SRMAP (August 2017 - June 2021)
   - Secured 2nd Runner-Up in UXperience 2024: The First Draft (November 2024)
@@ -372,10 +437,10 @@ achievements:
 
 interests:
   technical:
+    - Generative AI Integration
     - Front-end Architecture
     - User Experience Design
     - Full-Stack Development
-    - AI Integration in Web Apps
     - Performance Optimization
     - Test-Driven Development
     - API Development
@@ -391,7 +456,6 @@ interests:
     - Coding and technology
     - Reading tech blogs
     - Exploring cloud technologies
-    - Open-source contributions
 
 languages:
   - English (Fluent)
@@ -405,16 +469,19 @@ references:
 keywords:
   - React.js
   - Vue.js
+  - FastAPI
+  - Python
   - JavaScript
   - TypeScript
   - Node.js
   - Full-Stack Development
   - Frontend Development
-  - UI/UX Design
-  - AI Integration
+  - Generative AI
+  - LLM Integration
+  - Groq API
+  - Supabase
   - Firebase
   - MongoDB
   - SASS/CSS
   - Responsive Design
-  - API Development
   - Cloud Deployment 

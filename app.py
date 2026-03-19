@@ -3,6 +3,7 @@ from flask_cors import CORS
 from chatbot import chatbot, get_response
 from datetime import datetime
 from functools import wraps
+import os
 
 app = Flask(__name__)
 # Configure CORS to allow all origins and methods
@@ -13,10 +14,10 @@ CORS(app, resources={
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
-app.secret_key = 'chatbot-admin-secret-key-2024'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'chatbot-admin-secret-key-2024')
 
 # Admin password
-ADMIN_PASSWORD = 'Adarsh232774'
+ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'Adarsh232774')
 
 # ==================== AUTHENTICATION ====================
 
@@ -58,15 +59,42 @@ def index():
     """Main chat interface"""
     return render_template("index.html")
 
-@app.route("/chat", methods=["POST", "OPTIONS"])
+@app.route("/api/chat", methods=["POST", "OPTIONS"])
 def chat():
     """Handle chat messages"""
     if request.method == "OPTIONS":
         return "", 200
     data = request.get_json()
-    question = data.get("question", "")
-    response = get_response(question)
-    return jsonify({"response": response})
+    question = data.get("message", data.get("question", ""))
+    
+    if not question:
+        return jsonify({"error": "No message provided"}), 400
+        
+    # Exact match handlers for standard questions
+    user_message_lower = question.lower().strip()
+    
+    if user_message_lower in ['help', 'what can you do', 'menu', 'options', 'features']:
+        help_msg = """
+Here's what I can tell you about Adarsh:
+<ul style="text-align: left; display: inline-block; padding-left: 20px;">
+    <li>👨‍💻 <b>Skills</b> (Languages, frameworks, tools)</li>
+    <li>🚀 <b>Projects</b> (Rahify, Student Tracker, etc.)</li>
+    <li>💼 <b>Experience</b> (Quinbay, UTD TA)</li>
+    <li>🎓 <b>Education</b> (MS at UTD, B.Tech at SRMAP)</li>
+    <li>👤 <b>Personal</b> (Interests, contact info, fun facts!)</li>
+</ul>
+What would you like to know?
+        """
+        return jsonify({
+            "response": help_msg,
+            "status": "success"
+        })
+        
+    try:
+        response = get_response(question)
+        return jsonify({"response": response, "status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e), "message": "Failed to generate AI response."}), 500
 
 # ==================== ADMIN ROUTES ====================
 
@@ -244,4 +272,5 @@ def admin_stats():
         return render_template("admin/error.html", error=f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5002)
+    port = int(os.getenv("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=True)

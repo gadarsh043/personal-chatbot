@@ -4,7 +4,7 @@ from difflib import SequenceMatcher
 import random
 import requests
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ class PersonalChatbot:
         self.resume = self.load_resume()
         self.firebase_db = self.init_firebase()
         self.learned_qa = self.load_learned_qa()
-        self.deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
+        self.groq_api_key = os.getenv('GROQ_API_KEY')
         
     # ==================== FIREBASE SETUP ====================
     
@@ -169,11 +169,9 @@ class PersonalChatbot:
             parts.append(f"Languages: {', '.join(skills['languages'])}")
         if 'frameworks' in skills:
             parts.append(f"Frameworks: {', '.join(skills['frameworks'])}")
-        if 'tools' in skills:
-            parts.append(f"Tools: {', '.join(skills['tools'])}")
-        if 'practices' in skills:
-            parts.append(f"Practices: {', '.join(skills['practices'])}")
-        return ". ".join(parts) if parts else "I have various technical skills!"
+        if 'tools_and_technologies' in skills:
+            parts.append(f"Tools: {', '.join(skills['tools_and_technologies'])}")
+        return " | ".join(parts) if parts else "I have various technical skills!"
 
     def format_experience(self):
         """Format work experience"""
@@ -195,7 +193,7 @@ class PersonalChatbot:
         """Format projects"""
         projects = self.resume.get('projects', [])
         if projects:
-            project_names = [p.get('name', 'Project') for p in projects]
+            project_names = [p.get('name', 'Project') for p in projects[:5]]
             return f"I've built projects including: {', '.join(project_names)}. Each taught me valuable skills in development and problem-solving."
         return "I enjoy building projects that solve real problems!"
 
@@ -240,9 +238,62 @@ class PersonalChatbot:
         
         return best_match, best_score
 
+    def get_dynamic_prompt_context(self):
+        """Build a dynamic prompt context from resume YAML"""
+        # Personal
+        personal = self.resume.get('personal', {})
+        bio = personal.get('summary', '')
+        
+        # Education
+        education = self.resume.get('education', [{}])[0]
+        edu_str = f"{education.get('degree')} at {education.get('university')} ({education.get('year')})"
+        
+        # Experience
+        experience = self.resume.get('experience', [{}])[0]
+        exp_str = f"{experience.get('role')} at {experience.get('company')}"
+        
+        # Projects (Top 5)
+        projects = self.resume.get('projects', [])[:5]
+        projects_str = "\n".join([f"- {p.get('name')}: {p.get('description')} (Live: {p.get('live', 'N/A')})" for p in projects])
+        
+        # Skills
+        skills = self.resume.get('skills', {})
+        langs = ", ".join(skills.get('languages', []))
+        frameworks = ", ".join(skills.get('frameworks', []))
+        tools = ", ".join(skills.get('tools_and_technologies', []))
+        
+        # Personal Facts
+        facts = self.resume.get('personal_facts', {})
+        facts_str = "\n".join([f"- {k.replace('_', ' ').title()}: {v}" for k, v in facts.items()])
+        
+        # Career Goals
+        goals = self.resume.get('career_goals', {})
+        goals_str = "\n".join([f"- {k.replace('_', ' ').title()}: {v}" for k, v in goals.items()])
+        
+        return f"""
+ABOUT ADARSH:
+- {bio}
+- Current Education: {edu_str}
+- Latest Experience: {exp_str}
+
+TOP 5 PROJECTS:
+{projects_str}
+
+CORE SKILLS:
+- Languages: {langs}
+- Frameworks: {frameworks}
+- Tools: {tools}
+
+PERSONAL FACTS ABOUT ADARSH:
+{facts_str}
+
+CAREER GOALS:
+{goals_str}
+"""
+
     def generate_ai_response(self, question):
-        """Generate AI response using DeepSeek"""
-        if not self.deepseek_api_key:
+        """Generate AI response using GROQ"""
+        if not self.groq_api_key:
             return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
         
         try:
@@ -252,7 +303,7 @@ class PersonalChatbot:
                 # Sort by created_at and get last 25
                 sorted_qa = sorted(
                     self.learned_qa.values(), 
-                    key=lambda x: x.get('created_at', datetime.min), 
+                    key=lambda x: x.get('created_at') or datetime.now(timezone.utc), 
                     reverse=True
                 )[:25]
                 
@@ -261,55 +312,47 @@ class PersonalChatbot:
             
             context_text = "\n\n".join(context_pairs) if context_pairs else "No previous conversations yet."
             
-            prompt = f"""You are Adarsh's personal AI assistant. Answer as Adarsh in first person. You should be knowledgeable, engaging, and always connect back to Adarsh's career and expertise.
+            # Build dynamic prompt
+            dynamic_context = self.get_dynamic_prompt_context()
+            
+            prompt = f"""You are Adarsh's personal AI assistant. Answer as Adarsh in first person ("I", "my"). You should be knowledgeable, engaging, and redirect to Adarsh's career when relevant.
 
-ABOUT ADARSH:
-- Computer Science graduate student at University of Texas at Dallas (UTD) with GPA 3.78
-- Currently serving as Teaching Assistant for CSE Web Programming course at UTD
-- Experienced Software Developer with track record at Quinbay Technologies (2021-2024)
-- Senior Software Developer who launched Seller Shipping Voucher UI adopted by 10,000+ sellers
-- Reduced testing validation time by 73% through custom VSCode plugin development
-- Boosted build efficiency by 2-5x and site performance by 30% through Vue 3 migration
-- Skills: JavaScript, TypeScript, Python, React, Vue.js, Node.js, Flask, Firebase, MongoDB, AWS, Docker, Kubernetes
-- Projects: Portfolio Website, AI Job Search Automation, Personal AI Chatbot, FitTrackAI, Rizzing App, AI Adventure Companion, VSCode Assist Plugin, PhotoShare, Blogger's Hub, 3D Tic-Tac-Toe, and more
-- Based in Dallas, Texas, United States
-- Open to opportunities and enjoys building innovative AI-powered solutions
+LIVE SOURCES (direct visitors here for more info if they ask):
+- Portfolio: https://adarshgella.com
+- GitHub: https://github.com/gadarsh043
+- LinkedIn: https://linkedin.com/in/g-adarsh-sonu
+- YouTube: https://www.youtube.com/@g_adarsh_sonu
 
-INSTRUCTIONS:
-1. Answer ANY question asked with genuine knowledge and enthusiasm
-2. Provide interesting facts, insights, or personal touches when possible
-3. ALWAYS smoothly transition to how this relates to Adarsh's skills or career
-4. Be conversational, smart, and personable
-5. If the question is about technology/programming, emphasize Adarsh's expertise
-6. Check the previous conversations below to avoid repeating answers
+{dynamic_context}
 
 PREVIOUS CONVERSATIONS (last 25):
 {context_text}
 
-CURRENT QUESTION: {question}
+INSTRUCTIONS:
+1. Answer ANY question asked with genuine knowledge and enthusiasm.
+2. Provide interesting facts, insights, or personal touches when possible based on the PERSONAL FACTS.
+3. ALWAYS smoothly transition to how this relates to Adarsh's skills or projects when appropriate.
+4. Be conversational, smart, and personable. Feel free to use markdown formatting like tables, bold text, or lists if it makes the answer better.
+5. If the question is about technology/programming, emphasize Adarsh's expertise.
+6. When answering personal questions, use the PERSONAL FACTS provided.
+7. Keep responses concise (under 80 words) but impactful. Do not mention word limits.
+8. Check the previous conversations below to avoid repeating answers exactly.
 
-EXAMPLE RESPONSES:
-Q: "Do you know India?"
-A: "Absolutely! India is an incredible country with a rich cultural heritage and a booming tech industry. Did you know India produces more IT graduates than any other country? Speaking of tech talent, that's exactly the kind of innovative environment that shaped Adarsh's problem-solving approach. His experience building scalable solutions at Quinbay really benefits from that global tech perspective. Are you interested in learning about his international development experience?"
-
-Q: "Do you know cooking?"  
-A: "I love the art of cooking! It's all about following recipes, experimenting with ingredients, and creating something amazing - just like coding! Fun fact: the best chefs are often great at debugging recipes when something goes wrong. That's actually similar to how Adarsh approaches software development - methodical, creative, and always iterating to perfection. His React and Node.js projects require the same attention to detail as a perfect dish. What kind of technical 'recipes' would you like to know about?"
-
-Now answer the current question following this style - be knowledgeable, engaging, and smoothly redirect to Adarsh's career (max 60 words, don't mention word count):"""
+CURRENT QUESTION: {question}"""
 
             response = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
+                "https://api.groq.com/openai/v1/chat/completions",
                 headers={
-                    'Authorization': f'Bearer {self.deepseek_api_key}',
+                    'Authorization': f'Bearer {self.groq_api_key}',
                     'Content-Type': 'application/json'
                 },
                 json={
-                    'model': 'deepseek-chat',
-                    'messages': [{'role': 'user', 'content': prompt}],
-                    'max_tokens': 400,
-                    'temperature': 0.8
+                    'model': 'llama-3.3-70b-versatile',
+                    'messages': [{'role': 'system', 'content': prompt}],
+                    'max_tokens': 500,
+                    'temperature': 0.7
                 },
-                timeout=15
+                timeout=30
             )
             
             if response.status_code == 200:
@@ -317,12 +360,20 @@ Now answer the current question following this style - be knowledgeable, engagin
                 print(f"🤖 Generated AI response for: {question[:50]}...")
                 return ai_answer
             else:
-                print(f"⚠️ DeepSeek API error: {response.status_code}")
+                print(f"⚠️ GROQ API error: {response.status_code}")
+                try:
+                    print(response.json())
+                except:
+                    pass
                 return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
                 
+        except requests.exceptions.Timeout:
+            print("⚠️ API request timed out")
+            return f"That's a great question about '{question}'! It's taking me a little too long to think of the perfect answer right now. Could you ask me something else?"
+            
         except Exception as e:
             print(f"⚠️ AI generation error: {e}")
-            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now as i am having trouble. Maybe will ask Adarsh to answer that question."
+            return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now as I am having trouble. Maybe will ask Adarsh to answer that question."
 
     # ==================== MAIN RESPONSE LOGIC ====================
     
@@ -339,7 +390,7 @@ Now answer the current question following this style - be knowledgeable, engagin
             if learned_match and score > 0.7:
                 response = learned_match['answer']
                 if learned_match.get('ai_generated') and not learned_match.get('reviewed'):
-                    response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated and may be updated as I learn more!</p>"
+                    response += "\n\n*💡 This answer was AI-generated and may be updated as I learn more!*"
                 return response
         
         # 2. Check resume-based responses
@@ -353,9 +404,9 @@ Now answer the current question following this style - be knowledgeable, engagin
         # Save to Firebase if available
         if self.firebase_db:
             self.save_learned_qa(question, ai_response, ai_generated=True)
-            ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. I'm always learning and improving my responses!</p>"
+            ai_response += "\n\n*💡 This answer was AI-generated. I'm always learning and improving my responses!*"
         else:
-            ai_response += "<br><p style='font-size: 0.8em; color: #666; font-style: italic; margin-top: 10px;'>💡 This answer was AI-generated. Note: Learning features are currently limited.</p>"
+            ai_response += "\n\n*💡 This answer was AI-generated. Note: Learning features are currently limited.*"
         
         return ai_response
 

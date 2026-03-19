@@ -6,7 +6,7 @@ This personal chatbot is a Flask-based web application that serves as an AI-powe
 ## Architecture
 - **Backend**: Flask (Python) with Firebase integration
 - **Frontend**: Modern HTML/CSS/JavaScript chat interface
-- **AI**: DeepSeek API for intelligent response generation
+- **AI**: Groq API for intelligent response generation
 - **Database**: Firebase Firestore for learned Q&A storage
 - **Data**: YAML-based resume information
 
@@ -266,7 +266,7 @@ class PersonalChatbot:
         self.resume = self.load_resume()
         self.firebase_db = self.init_firebase()
         self.learned_qa = self.load_learned_qa()
-        self.deepseek_api_key = os.getenv('DEEPSEEK_API_KEY')
+        self.groq_api_key = os.getenv('GROQ_API_KEY')
 ```
 
 **Purpose**: Initializes chatbot with all necessary components.
@@ -357,8 +357,8 @@ def get_resume_response(self, question):
 #### AI Response Generation (Lines 192-267)
 ```python
 def generate_ai_response(self, question):
-    """Generate AI response using DeepSeek"""
-    if not self.deepseek_api_key:
+    """Generate AI response using Groq"""
+    if not self.groq_api_key:
         return f"That's a great question about '{question}'! While I'm here to share Adarsh's incredible journey in technology. I don't think I can answer that question right now. Maybe will ask Adarsh to answer that question."
     
     try:
@@ -383,13 +383,13 @@ CURRENT QUESTION: {question}
 Now answer the current question following this style - be knowledgeable, engaging, and smoothly redirect to Adarsh's career (max 60 words):"""
 
         response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
+            "https://api.groq.com/v1/chat/completions",
             headers={
-                'Authorization': f'Bearer {self.deepseek_api_key}',
+                'Authorization': f'Bearer {self.groq_api_key}',
                 'Content-Type': 'application/json'
             },
             json={
-                'model': 'deepseek-chat',
+                'model': 'groq-chat',
                 'messages': [{'role': 'user', 'content': prompt}],
                 'max_tokens': 400,
                 'temperature': 0.8
@@ -407,7 +407,7 @@ Now answer the current question following this style - be knowledgeable, engagin
         return fallback_message
 ```
 
-**Purpose**: Generates contextual AI responses using DeepSeek API with conversation history.
+**Purpose**: Generates contextual AI responses using Groq API with conversation history.
 
 #### Main Response Logic (Lines 271-296)
 ```python
@@ -716,7 +716,7 @@ gunicorn==21.2.0
 4. **Response Processing** → chatbot.py processes through:
    - Firebase learned Q&A search
    - Resume YAML matching
-   - AI generation via DeepSeek
+   - AI generation via Groq
 5. **Response Storage** → New AI responses saved to Firebase
 6. **JSON Response** → Flask returns structured response
 7. **UI Update** → JavaScript updates chat interface
